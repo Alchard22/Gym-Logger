@@ -113,8 +113,12 @@ VALUES(?, ?, ?, ?);
 
 selectExerciseWithMuscleGroups:
 SELECT
-    e.*,
-    mg.name as muscle_group_name,
+    e.id,
+    e.name,
+    e.aliases,
+    e.description,
+    e.video_link,
+    mg.name AS muscle_group_name,
     emg.involvement_type
 FROM Exercise e
 JOIN ExerciseMuscleGroup emg ON e.id = emg.exercise_id

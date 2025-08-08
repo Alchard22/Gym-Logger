@@ -2,18 +2,17 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.sqldelight)
-
 }
 
 kotlin {
-    androidTarget {
+    android {
         compilations.all {
             kotlinOptions {
                 jvmTarget = "1.8"
             }
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -26,19 +25,35 @@ kotlin {
     }
 
     sourceSets {
-        commonMain.dependencies {
-            implementation(libs.sqldelight.driver.sqlite)
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.sqldelight.driver.sqlite)
+            }
         }
 
-        androidMain.dependencies {
-            implementation(libs.sqldelight.driver.android)
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.sqldelight.driver.android)
+            }
         }
 
-        iosMain.dependencies {
-            implementation(libs.sqldelight.driver.native)
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+            dependencies {
+                implementation(libs.sqldelight.driver.native)
+            }
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
         }
     }
 }
@@ -58,8 +73,7 @@ android {
 sqldelight {
     databases {
         create("GymDatabase") {
-            packageName.set("com.yourpackage.gymlogger.database")
+            packageName.set("com.example.gymlogger.database")
         }
     }
 }
-
