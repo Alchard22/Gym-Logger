@@ -1,0 +1,122 @@
+-- Muscle Groups lookup table
+CREATE TABLE MuscleGroup (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    category TEXT -- 'upper', 'lower', 'core'
+);
+
+-- Training Plans
+CREATE TABLE TrainingPlan (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    start_date INTEGER NOT NULL,
+    end_date INTEGER
+);
+
+-- Workout Sessions
+CREATE TABLE WorkoutSession (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    training_plan_id INTEGER,
+    name TEXT NOT NULL,
+    date INTEGER NOT NULL,
+    notes TEXT,
+    FOREIGN KEY(training_plan_id) REFERENCES TrainingPlan(id)
+);
+
+-- Exercise definitions
+CREATE TABLE Exercise (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    aliases TEXT,
+    description TEXT,
+    video_link TEXT
+);
+
+-- Sets performed in a workout
+CREATE TABLE WorkoutSet (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    workout_session_id INTEGER NOT NULL,
+    exercise_id INTEGER NOT NULL,
+    set_number INTEGER NOT NULL,
+    reps INTEGER NOT NULL,
+    weight REAL NOT NULL,
+    intensity INTEGER,
+    rest_seconds INTEGER,
+    FOREIGN KEY(workout_session_id) REFERENCES WorkoutSession(id),
+    FOREIGN KEY(exercise_id) REFERENCES Exercise(id)
+);
+
+-- Junction Tables for Many-to-Many relationships
+CREATE TABLE ExerciseMuscleGroup (
+    exercise_id INTEGER NOT NULL,
+    muscle_group_id INTEGER NOT NULL,
+    involvement_type TEXT NOT NULL, -- 'primary', 'secondary', 'stabilizer'
+    PRIMARY KEY(exercise_id, muscle_group_id),
+    FOREIGN KEY(exercise_id) REFERENCES Exercise(id),
+    FOREIGN KEY(muscle_group_id) REFERENCES MuscleGroup(id)
+);
+
+CREATE TABLE WorkoutSessionMuscleGroup (
+    workout_session_id INTEGER NOT NULL,
+    muscle_group_id INTEGER NOT NULL,
+    PRIMARY KEY(workout_session_id, muscle_group_id),
+    FOREIGN KEY(workout_session_id) REFERENCES WorkoutSession(id),
+    FOREIGN KEY(muscle_group_id) REFERENCES MuscleGroup(id)
+);
+
+CREATE TABLE WorkoutSetMuscleGroup (
+    workout_set_id INTEGER NOT NULL,
+    muscle_group_id INTEGER NOT NULL,
+    PRIMARY KEY(workout_set_id, muscle_group_id),
+    FOREIGN KEY(workout_set_id) REFERENCES WorkoutSet(id),
+    FOREIGN KEY(muscle_group_id) REFERENCES MuscleGroup(id)
+);
+
+-- Seed data for muscle groups
+INSERT INTO MuscleGroup(name, category) VALUES
+('Push', 'push'),
+('Pull', 'pull'),
+('Legs', 'legs'),
+('Chest', 'push'),
+('Side Delts', 'push'),
+('Front Delts', 'push'),
+('Rear Delts', 'pull'),
+('Back', 'pull'),
+('Forearms', 'pull'),
+('Shoulders', 'push'),
+('Biceps', 'pull'),
+('Triceps', 'push'),
+('Quadriceps', 'legs'),
+('Hamstrings', 'legs'),
+('Glutes', 'legs'),
+('Calves', 'legs'),
+('Core', 'core');
+
+-- Basic queries to get started
+selectAllMuscleGroups:
+SELECT * FROM MuscleGroup ORDER BY category, name;
+
+selectAllTrainingPlans:
+SELECT * FROM TrainingPlan ORDER BY start_date DESC;
+
+selectWorkoutSessionsForPlan:
+SELECT * FROM WorkoutSession WHERE training_plan_id = ? ORDER BY date DESC;
+
+insertTrainingPlan:
+INSERT INTO TrainingPlan(name, description, start_date, end_date)
+VALUES(?, ?, ?, ?);
+
+insertWorkoutSession:
+INSERT INTO WorkoutSession(training_plan_id, name, date, notes)
+VALUES(?, ?, ?, ?);
+
+selectExerciseWithMuscleGroups:
+SELECT
+    e.*,
+    mg.name as muscle_group_name,
+    emg.involvement_type
+FROM Exercise e
+JOIN ExerciseMuscleGroup emg ON e.id = emg.exercise_id
+JOIN MuscleGroup mg ON emg.muscle_group_id = mg.id
+WHERE e.id = ?;
