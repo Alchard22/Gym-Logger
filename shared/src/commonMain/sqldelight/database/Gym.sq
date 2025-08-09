@@ -93,23 +93,47 @@ INSERT INTO MuscleGroup(name, category) VALUES
 ('Calves', 'legs'),
 ('Core', 'core');
 
--- Basic queries to get started
+-- Basic queries
 selectAllMuscleGroups:
 SELECT * FROM MuscleGroup ORDER BY category, name;
 
+insertMuscleGroup:
+INSERT INTO MuscleGroup(name, category) VALUES(?, ?);
+
+-- Training Plans
 selectAllTrainingPlans:
 SELECT * FROM TrainingPlan ORDER BY start_date DESC;
 
-selectWorkoutSessionsForPlan:
-SELECT * FROM WorkoutSession WHERE training_plan_id = ? ORDER BY date DESC;
+selectTrainingPlanById:
+SELECT * FROM TrainingPlan WHERE id = ?;
 
 insertTrainingPlan:
 INSERT INTO TrainingPlan(name, description, start_date, end_date)
 VALUES(?, ?, ?, ?);
 
+-- Workout Sessions
+selectWorkoutSessionsForPlan:
+SELECT * FROM WorkoutSession WHERE training_plan_id = ? ORDER BY date DESC;
+
+selectAllWorkoutSessions:
+SELECT * FROM WorkoutSession ORDER BY date DESC;
+
+selectWorkoutSessionById:
+SELECT * FROM WorkoutSession WHERE id = ?;
+
 insertWorkoutSession:
 INSERT INTO WorkoutSession(training_plan_id, name, date, notes)
 VALUES(?, ?, ?, ?);
+
+-- Exercises
+selectAllExercises:
+SELECT * FROM Exercise ORDER BY name;
+
+selectExerciseById:
+SELECT * FROM Exercise WHERE id = ?;
+
+insertExercise:
+INSERT INTO Exercise(name, description, video_link) VALUES(?, ?, ?);
 
 selectExerciseWithMuscleGroups:
 SELECT
@@ -124,3 +148,45 @@ FROM Exercise e
 JOIN ExerciseMuscleGroup emg ON e.id = emg.exercise_id
 JOIN MuscleGroup mg ON emg.muscle_group_id = mg.id
 WHERE e.id = ?;
+
+-- Workout Sets
+selectWorkoutSetsForSession:
+SELECT * FROM WorkoutSet WHERE workout_session_id = ? ORDER BY set_number;
+
+selectWorkoutSetById:
+SELECT * FROM WorkoutSet WHERE id = ?;
+
+insertWorkoutSet:
+INSERT INTO WorkoutSet(workout_session_id, exercise_id, set_number, reps, weight, intensity, rest_seconds)
+VALUES(?, ?, ?, ?, ?, ?, ?);
+
+updateWorkoutSet:
+UPDATE WorkoutSet
+SET reps = ?, weight = ?, intensity = ?, rest_seconds = ?
+WHERE id = ?;
+
+-- Junction table inserts
+insertExerciseMuscleGroup:
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type)
+VALUES(?, ?, ?);
+
+insertWorkoutSessionMuscleGroup:
+INSERT INTO WorkoutSessionMuscleGroup(workout_session_id, muscle_group_id)
+VALUES(?, ?);
+
+-- Utility queries
+lastInsertRowId:
+SELECT last_insert_rowid();
+
+-- Analytics queries
+selectRecentWorkouts:
+SELECT * FROM WorkoutSession WHERE date >= ? ORDER BY date DESC;
+
+countSetsForExercise:
+SELECT COUNT(*) FROM WorkoutSet WHERE exercise_id = ?;
+
+selectPersonalBest:
+SELECT * FROM WorkoutSet
+WHERE exercise_id = ?
+ORDER BY weight DESC
+LIMIT 1;
