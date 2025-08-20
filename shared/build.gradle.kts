@@ -4,8 +4,13 @@ plugins {
     alias(libs.plugins.sqldelight)
 }
 
+repositories {
+    google()
+    mavenCentral()
+}
+
 kotlin {
-    android {
+    androidTarget {
         compilations.all {
             kotlinOptions {
                 jvmTarget = "1.8"
@@ -13,41 +18,44 @@ kotlin {
         }
     }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "shared"
-            isStatic = true
-        }
-    }
+    // Add iOS targets
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.sqldelight.driver.sqlite)
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.sqldelight.runtime)
+                implementation(libs.sqldelight.coroutines.extensions)
+                implementation(libs.kotlinx.datetime)
             }
         }
-
         val androidMain by getting {
             dependencies {
                 implementation(libs.sqldelight.driver.android)
+                implementation(libs.androidx.constraintlayout)
             }
         }
 
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
+        // Create a shared iOS source set
         val iosMain by creating {
             dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
             dependencies {
                 implementation(libs.sqldelight.driver.native)
             }
+        }
+
+        // Make all iOS targets use the shared iosMain source set
+        val iosX64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
         }
 
         val commonTest by getting {
