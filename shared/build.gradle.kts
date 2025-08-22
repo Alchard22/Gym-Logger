@@ -19,9 +19,17 @@ kotlin {
     }
 
     // Add iOS targets
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "shared"
+            isStatic = true
+            linkerOpts.add("-lsqlite3")
+        }
+    }
 
     sourceSets {
         val commonMain by getting {
