@@ -24,6 +24,31 @@ CREATE TABLE WorkoutSession (
     FOREIGN KEY(training_plan_id) REFERENCES TrainingPlan(id)
 );
 
+CREATE TABLE WorkoutTemplate (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    training_plan_id INTEGER,
+    name TEXT NOT NULL, -- "Push Day", "Pull Day", "Leg Day"
+    day_of_week INTEGER, -- 1-7, or NULL for flexible
+    week_number INTEGER, -- for progressive programs
+    description TEXT,
+    FOREIGN KEY(training_plan_id) REFERENCES TrainingPlan(id)
+);
+
+CREATE TABLE WorkoutTemplateExercise (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    workout_template_id INTEGER NOT NULL,
+    exercise_id INTEGER NOT NULL,
+    order_index INTEGER NOT NULL,
+    target_sets INTEGER,
+    target_reps_min INTEGER,
+    target_reps_max INTEGER,
+    target_weight REAL,
+    rest_seconds INTEGER,
+    notes TEXT,
+    FOREIGN KEY(workout_template_id) REFERENCES WorkoutTemplate(id),
+    FOREIGN KEY(exercise_id) REFERENCES Exercise(id)
+);
+
 -- Exercise definitions
 CREATE TABLE Exercise (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -124,6 +149,21 @@ SELECT * FROM WorkoutSession WHERE id = ?;
 insertWorkoutSession:
 INSERT INTO WorkoutSession(training_plan_id, name, date, notes)
 VALUES(?, ?, ?, ?);
+
+selectWorkoutTemplatesForPlan:
+SELECT * FROM WorkoutTemplate WHERE training_plan_id = ? ORDER BY day_of_week, week_number;
+
+selectWorkoutTemplateExercises:
+SELECT * FROM WorkoutTemplateExercise
+WHERE workout_template_id = ?
+ORDER BY order_index;
+
+insertWorkoutTemplate:
+INSERT INTO WorkoutTemplate(training_plan_id, name, day_of_week, week_number, description)
+VALUES(?, ?, ?, ?, ?);
+
+selectWorkoutTemplateById:
+SELECT * FROM WorkoutTemplate WHERE id = ?;
 
 -- Exercises
 selectAllExercises:

@@ -8,6 +8,8 @@ import database.TrainingPlan
 import database.WorkoutSession
 import database.WorkoutSet
 import database.MuscleGroup
+import database.WorkoutTemplate
+import database.WorkoutTemplateExercise
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -84,6 +86,56 @@ class GymRepository(private val database: GymDatabase) {
     suspend fun getWorkoutSession(id: Long): WorkoutSession? {
         return withContext(Dispatchers.Default) {
             database.gymDatabaseQueries.selectWorkoutSessionById(id).executeAsOneOrNull()
+        }
+    }
+
+    // Get workout templates for a training plan
+    fun getWorkoutTemplatesForPlan(planId: Long): Flow<List<WorkoutTemplate>>{
+        return database.gymDatabaseQueries.selectWorkoutTemplatesForPlan(planId)
+            .asFlow()
+            .mapToList(Dispatchers.Default)
+    }
+
+    // Get exercises for a workout template
+    suspend fun getWorkoutTemplateExercises(templateId: Long): Flow<List<WorkoutTemplateExercise>>{
+        return database.gymDatabaseQueries.selectWorkoutTemplateExercises(templateId)
+            .asFlow()
+            .mapToList(Dispatchers.Default)
+    }
+
+    suspend fun createWorkoutFromTemplate(templateId: Long, date: Long): Long {
+        return withContext(Dispatchers.Default) {
+            // First, get the template details
+            val template = database.gymDatabaseQueries.selectWorkoutTemplateById(templateId).executeAsOne()
+            val templateExercises = database.gymDatabaseQueries.selectWorkoutTemplateExercises(templateId).executeAsList()
+
+            // Create the workout session
+            database.gymDatabaseQueries.insertWorkoutSession(
+                training_plan_id = template.training_plan_id,
+                name = template.name, // Use template name
+                date = date,
+                notes = "Created from ${template.name} template"
+            )
+
+            val workoutSessionId = database.gymDatabaseQueries.lastInsertRowId().executeAsOne()
+
+            // Create placeholder workout sets for each template exercise
+            templateExercises.forEachIndexed { index, templateExercise ->
+                // Create sets based on template (you might want multiple sets)
+                for (setNumber in 1..(templateExercise.target_sets ?: 3)) {
+                    database.gymDatabaseQueries.insertWorkoutSet(
+                        workout_session_id = workoutSessionId,
+                        exercise_id = templateExercise.exercise_id,
+                        set_number = setNumber.toLong(),
+                        reps = templateExercise.target_reps_min ?: 0, // Default to min reps
+                        weight = templateExercise.target_weight ?: 0.0, // Default weight
+                        intensity = null,
+                        rest_seconds = templateExercise.rest_seconds?.toLong()
+                    )
+                }
+            }
+
+            workoutSessionId
         }
     }
 
