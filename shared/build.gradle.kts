@@ -28,6 +28,7 @@ kotlin {
             baseName = "shared"
             isStatic = true
             linkerOpts.add("-lsqlite3")
+            binaryOption("bundleId", "com.example.gymlogger.shared")
         }
     }
 
@@ -38,6 +39,11 @@ kotlin {
                 implementation(libs.sqldelight.runtime)
                 implementation(libs.sqldelight.coroutines.extensions)
                 implementation(libs.kotlinx.datetime)
+
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.ui)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material3)
             }
         }
         val androidMain by getting {
