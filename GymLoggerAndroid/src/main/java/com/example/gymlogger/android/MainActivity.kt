@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.gymlogger.Greeting
+import com.example.gymlogger.composables.AddTrainingPlanScreen
 import com.example.gymlogger.database.DatabaseModule
 import com.example.gymlogger.repository.GymRepository
 
@@ -25,6 +25,18 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     GreetingView(Greeting().greet())
+                    AddTrainingPlanScreen(
+                        repository = repository!!,
+                        onPlanAdded = { planId ->
+                            // Handle successful creation
+                            println("Created plan with ID: $planId")
+                            // Navigate to plan details or back to list
+                        },
+                        onNavigateBack = {
+                            // Handle back navigation
+                            finish() // or use proper navigation
+                        }
+                    )
                 }
             }
         }
@@ -36,10 +48,10 @@ fun GreetingView(text: String) {
     Text(text = text)
 }
 
-@Preview
-@Composable
-fun DefaultPreview() {
-    MyApplicationTheme {
-        GreetingView("Hello, Android!")
-    }
-}
+//@Preview
+//@Composable
+//fun DefaultPreview() {
+//    MyApplicationTheme {
+//        GreetingView("Hello, Android!")
+//    }
+//}
