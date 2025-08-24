@@ -10,11 +10,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.gymlogger.Greeting
 import com.example.gymlogger.ui.composables.AddTrainingPlanScreen
 import com.example.gymlogger.database.DatabaseModule
 import com.example.gymlogger.repository.GymRepository
-import com.example.gymlogger.ui.composables.ViewTrainingPlansScreen
+import com.example.gymlogger.ui.composables.MainNavigation
+import com.example.gymlogger.ui.composables.ViewTrainingPlans
 
 class MainActivity : ComponentActivity() {
     private var repository: GymRepository? = null;
@@ -30,40 +30,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxSize(),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.spacedBy(0.dp) // No extra spacing between cards
-                            ) {
-                                item {
-                                    ViewTrainingPlansScreen(
-                                        repository = repository!!,
-                                        onPlanSelected = { planId ->
-                                            // Handle plan selection
-                                            println("Selected plan with ID: $planId")
-                                            // Navigate to plan details or workout session
-                                        },
-                                        onNavigateBack = {
-                                            // Handle back navigation
-                                            finish() // or use proper navigation
-                                        }
-                                    )
-                                }
-
-                                item {
-                                    AddTrainingPlanScreen(
-                                        repository = repository!!,
-                                        onPlanAdded = { planId ->
-                                            // Handle successful creation
-                                            println("Created plan with ID: $planId")
-                                            // Navigate to plan details or back to list
-                                        },
-                                        onNavigateBack = {
-                                            // Handle back navigation
-                                            finish() // or use proper navigation
-                                        }
-                                    )
-                                }
-                            }
+                            MainNavigation(repository!!)
                         }
                     }
                 }

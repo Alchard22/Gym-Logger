@@ -136,6 +136,20 @@ insertTrainingPlan:
 INSERT INTO TrainingPlan(name, description, start_date, end_date)
 VALUES(?, ?, ?, ?);
 
+updateTrainingPlan:
+UPDATE TrainingPlan
+SET name = ?, description = ?
+WHERE id = ?;
+
+updateTrainingPlanEndDate:
+UPDATE TrainingPlan
+SET end_date = ?
+WHERE id = ?;
+
+deleteTrainingPlan:
+DELETE FROM TrainingPlan
+WHERE id = ?;
+
 -- Workout Sessions
 selectWorkoutSessionsForPlan:
 SELECT * FROM WorkoutSession WHERE training_plan_id = ? ORDER BY date DESC;
@@ -164,6 +178,19 @@ VALUES(?, ?, ?, ?, ?);
 
 selectWorkoutTemplateById:
 SELECT * FROM WorkoutTemplate WHERE id = ?;
+
+-- Delete workout sessions for a training plan
+deleteWorkoutSessionsForPlan:
+DELETE FROM WorkoutSession
+WHERE training_plan_id = ?;
+
+-- Delete workout sets for all sessions in a training plan
+deleteWorkoutSetsForPlan:
+DELETE FROM WorkoutSet
+WHERE workout_session_id IN (
+    SELECT id FROM WorkoutSession
+    WHERE training_plan_id = ?
+);
 
 -- Exercises
 selectAllExercises:

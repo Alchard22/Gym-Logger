@@ -35,7 +35,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
-fun ViewTrainingPlansScreen(
+fun ViewTrainingPlans(
     repository: GymRepository,
     onPlanSelected: (Long) -> Unit = {},
     onNavigateBack: () -> Unit = {}

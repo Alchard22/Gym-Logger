@@ -57,6 +57,45 @@ class GymRepository(private val database: GymDatabase) {
         }
     }
 
+    suspend fun updateTrainingPlan(
+        id: Long,
+        name: String,
+        description: String?
+    ) {
+        withContext(Dispatchers.Default) {
+            database.gymDatabaseQueries.updateTrainingPlan(
+                name = name,
+                description = description,
+                id = id
+            )
+        }
+    }
+
+    suspend fun updateTrainingPlanEndDate(
+        id: Long,
+        endDate: Long
+    ) {
+        withContext(Dispatchers.Default) {
+            database.gymDatabaseQueries.updateTrainingPlanEndDate(
+                end_date = endDate,
+                id = id
+            )
+        }
+    }
+
+    suspend fun deleteTrainingPlan(id: Long) {
+        withContext(Dispatchers.Default) {
+            // First delete all workout sets for sessions in this plan
+            database.gymDatabaseQueries.deleteWorkoutSetsForPlan(id)
+
+            // Then delete all workout sessions for this plan
+            database.gymDatabaseQueries.deleteWorkoutSessionsForPlan(id)
+
+            // Finally delete the training plan itself
+            database.gymDatabaseQueries.deleteTrainingPlan(id)
+        }
+    }
+
     // === WORKOUT SESSIONS ===
 
     fun getWorkoutSessionsForPlan(planId: Long): Flow<List<WorkoutSession>> {
