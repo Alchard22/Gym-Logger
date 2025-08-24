@@ -8,7 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.gymlogger.Greeting
-import com.example.gymlogger.composables.AddTrainingPlanScreen
+import com.example.gymlogger.ui.composables.AddTrainingPlanScreen
 import com.example.gymlogger.database.DatabaseModule
 import com.example.gymlogger.repository.GymRepository
 

@@ -1,15 +1,6 @@
-package com.example.gymlogger.composables
+package com.example.gymlogger.ui.composables
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.gymlogger.ui.Animations
 import com.example.gymlogger.repository.GymRepository
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -60,6 +52,7 @@ fun AddTrainingPlanScreen(
     onPlanAdded: (Long) -> Unit = {},
     onNavigateBack: () -> Unit = {}
 ) {
+    val animations = Animations()
     var isExpanded by remember { mutableStateOf(false) }
     var selectedPlanType by remember { mutableStateOf<PlanType?>(null) }
 
@@ -113,10 +106,8 @@ fun AddTrainingPlanScreen(
                 // Expanded Options
                 AnimatedVisibility(
                     visible = isExpanded && selectedPlanType == null,
-                    enter = fadeIn(spring(Spring.DampingRatioLowBouncy)) +
-                            expandVertically(spring(Spring.DampingRatioLowBouncy)),
-                    exit = fadeOut(spring(Spring.DampingRatioLowBouncy)) +
-                            shrinkVertically(spring(Spring.DampingRatioLowBouncy))
+                    enter = animations.fadeInMenu,
+                    exit = animations.fadeOutMenu
                 ){
                     Column(
                         modifier = Modifier.padding(16.dp),
@@ -147,8 +138,7 @@ fun AddTrainingPlanScreen(
         // Form Sections
         AnimatedVisibility(
             visible = selectedPlanType != null,
-            enter = fadeIn(spring(Spring.DampingRatioNoBouncy)) +
-                    expandVertically(spring(Spring.DampingRatioNoBouncy))
+            enter = animations.fadeInForm
         ) {
             Card(
                 modifier = Modifier
