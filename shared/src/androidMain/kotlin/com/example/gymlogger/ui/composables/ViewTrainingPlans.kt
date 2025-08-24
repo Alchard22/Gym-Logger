@@ -47,12 +47,14 @@ fun ViewTrainingPlans(
     val trainingPlans by repository.getAllTrainingPlans().collectAsState(initial = emptyList())
     val sortedPlans = trainingPlans.sortedByDescending { it.start_date }
     val allWorkoutSessions by repository.getAllWorkoutSessions().collectAsState(initial = emptyList())
+    val sortedPlansNotEnded = sortedPlans.filter { it.end_date == null }
+    val plansWithoutRecent = sortedPlans.filter { it.id != sortedPlansNotEnded.firstOrNull()?.id }
 
     // Determine the most recent plan based on workout activity
     LaunchedEffect(trainingPlans, allWorkoutSessions) {
         mostRecentPlan = when {
             trainingPlans.isEmpty() -> null
-            allWorkoutSessions.isEmpty() -> sortedPlans.firstOrNull()
+            allWorkoutSessions.isEmpty() -> sortedPlansNotEnded.firstOrNull()
             else -> {
                 // Find the plan with the most recent workout session
                 val planWithMostRecentWorkout = allWorkoutSessions
@@ -63,9 +65,8 @@ fun ViewTrainingPlans(
                             trainingPlans.find { it.id == planId }
                         }
                     }
-
                 // If no plan has workout sessions, fall back to most recent plan by creation date
-                planWithMostRecentWorkout ?: sortedPlans.firstOrNull()
+                planWithMostRecentWorkout ?: sortedPlansNotEnded.firstOrNull()
             }
         }
     }
@@ -178,7 +179,7 @@ fun ViewTrainingPlans(
                         )
 
                         // Show all plans except the first one (since it's already shown above)
-                        sortedPlans.drop(1).forEach { plan ->
+                        plansWithoutRecent.forEach { plan ->
                             TrainingPlanCard(
                                 plan = plan,
                                 isRecent = false,
