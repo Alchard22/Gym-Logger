@@ -1,28 +1,51 @@
 package com.example.gymlogger.composables
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
-import kotlinx.datetime.*
 import com.example.gymlogger.repository.GymRepository
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 enum class PlanType {
     SELF_DIRECTED,
@@ -43,137 +66,126 @@ fun AddTrainingPlanScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Collapsible Header Section
-        AnimatedVisibility(
-            visible = !isExpanded,
-            enter = fadeIn(spring(Spring.DampingRatioMediumBouncy)) +
-                    expandVertically(spring(Spring.DampingRatioMediumBouncy)),
-            exit = fadeOut(spring(Spring.DampingRatioMediumBouncy)) +
-                    shrinkVertically(spring(Spring.DampingRatioMediumBouncy))
+        // Dropdown Card Section
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = MaterialTheme.shapes.medium,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(1f / 6f)
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .clickable { isExpanded = true },
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+            Column {
+                // Header - Always Visible
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            if (selectedPlanType == null) {
+                                isExpanded = !isExpanded
+                            }
+                        }
+                        .padding(20.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Add Training Plan",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Add Training Plan",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
 
-                    Text(
-                        text = "Tap to get started",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
-
-        // Expanded Options Section
-        AnimatedVisibility(
-            visible = isExpanded && selectedPlanType == null,
-            enter = fadeIn(spring(Spring.DampingRatioMediumBouncy)) +
-                    expandVertically(spring(Spring.DampingRatioMediumBouncy)),
-            exit = fadeOut(spring(Spring.DampingRatioMediumBouncy)) +
-                    shrinkVertically(spring(Spring.DampingRatioMediumBouncy))
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Header with back option
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Choose Plan Type",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    TextButton(onClick = {
-                        isExpanded = false
-                        selectedPlanType = null
-                    }) {
-                        Text("Back")
+                        if (!isExpanded && selectedPlanType == null) {
+                            Text(
+                                text = "Tap to see options",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                // Expanded Options
+                AnimatedVisibility(
+                    visible = isExpanded && selectedPlanType == null,
+                    enter = fadeIn(spring(Spring.DampingRatioLowBouncy)) +
+                            expandVertically(spring(Spring.DampingRatioLowBouncy)),
+                    exit = fadeOut(spring(Spring.DampingRatioLowBouncy)) +
+                            shrinkVertically(spring(Spring.DampingRatioLowBouncy))
+                ){
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        PlanTypeCard(
+                            title = "Self-Directed",
+                            description = "Create workouts as you go. Perfect for experienced lifters.",
+                            onClick = { selectedPlanType = PlanType.SELF_DIRECTED }
+                        )
 
-                // Plan Type Options
-                PlanTypeCard(
-                    title = "Self-Directed",
-                    description = "Create workouts as you go. Perfect for experienced lifters who prefer flexibility.",
-                    onClick = { selectedPlanType = PlanType.SELF_DIRECTED }
-                )
+                        PlanTypeCard(
+                            title = "Programmed",
+                            description = "Design your own workout templates and schedule.",
+                            onClick = { selectedPlanType = PlanType.PROGRAMMED }
+                        )
 
-                PlanTypeCard(
-                    title = "Programmed",
-                    description = "Design your own workout templates and schedule. Structure meets customization.",
-                    onClick = { selectedPlanType = PlanType.PROGRAMMED }
-                )
-
-                PlanTypeCard(
-                    title = "Pre-Built Programs",
-                    description = "Choose from proven routines like Push/Pull/Legs, Upper/Lower splits, and more.",
-                    onClick = { selectedPlanType = PlanType.PRE_BUILT }
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
+                        PlanTypeCard(
+                            title = "Pre-Built Programs",
+                            description = "Choose from proven routines like Push/Pull/Legs.",
+                            onClick = { selectedPlanType = PlanType.PRE_BUILT }
+                        )
+                    }
+                }
             }
         }
 
         // Form Sections
         AnimatedVisibility(
             visible = selectedPlanType != null,
-            enter = fadeIn(spring(Spring.DampingRatioMediumBouncy)) +
-                    expandVertically(spring(Spring.DampingRatioMediumBouncy)),
-            exit = fadeOut(spring(Spring.DampingRatioMediumBouncy)) +
-                    shrinkVertically(spring(Spring.DampingRatioMediumBouncy))
+            enter = fadeIn(spring(Spring.DampingRatioNoBouncy)) +
+                    expandVertically(spring(Spring.DampingRatioNoBouncy))
         ) {
-            when (selectedPlanType) {
-                PlanType.SELF_DIRECTED -> SelfDirectedPlanForm(
-                    repository = repository,
-                    onPlanAdded = onPlanAdded,
-                    onNavigateBack = {
-                        selectedPlanType = null
-                    }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = MaterialTheme.shapes.medium,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
+            ) {
+                when (selectedPlanType) {
+                    PlanType.SELF_DIRECTED -> SelfDirectedPlanForm(
+                        repository = repository,
+                        onPlanAdded = onPlanAdded,
+                        onNavigateBack = {
+                            selectedPlanType = null
+                        }
+                    )
 
-                PlanType.PROGRAMMED -> ProgrammedPlanForm(
-                    repository = repository,
-                    onPlanAdded = onPlanAdded,
-                    onNavigateBack = {
-                        selectedPlanType = null
-                    }
-                )
+                    PlanType.PROGRAMMED -> ProgrammedPlanForm(
+                        repository = repository,
+                        onPlanAdded = onPlanAdded,
+                        onNavigateBack = {
+                            selectedPlanType = null
+                        }
+                    )
 
-                PlanType.PRE_BUILT -> PreBuiltProgramForm(
-                    repository = repository,
-                    onPlanAdded = onPlanAdded,
-                    onNavigateBack = {
-                        selectedPlanType = null
-                    }
-                )
+                    PlanType.PRE_BUILT -> PreBuiltProgramForm(
+                        repository = repository,
+                        onPlanAdded = onPlanAdded,
+                        onNavigateBack = {
+                            selectedPlanType = null
+                        }
+                    )
 
-                null -> {}
+                    null -> {}
+                }
             }
         }
     }
@@ -189,9 +201,9 @@ private fun PlanTypeCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        shape = RoundedCornerShape(8.dp),
+        shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Column(
@@ -203,7 +215,7 @@ private fun PlanTypeCard(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -246,7 +258,8 @@ private fun SelfDirectedPlanForm(
             Text(
                 text = "Self-Directed Plan",
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             TextButton(onClick = onNavigateBack) {
@@ -266,7 +279,7 @@ private fun SelfDirectedPlanForm(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             isError = name.isBlank() && errorMessage != null,
-            shape = RoundedCornerShape(8.dp)
+            shape = MaterialTheme.shapes.medium
         )
 
         OutlinedTextField(
@@ -276,14 +289,14 @@ private fun SelfDirectedPlanForm(
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
             maxLines = 5,
-            shape = RoundedCornerShape(8.dp)
+            shape = MaterialTheme.shapes.medium
         )
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
+            shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
             )
         ) {
             Column(
@@ -313,7 +326,7 @@ private fun SelfDirectedPlanForm(
         errorMessage?.let { error ->
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
+                shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer
                 )
@@ -321,7 +334,7 @@ private fun SelfDirectedPlanForm(
                 Text(
                     text = error,
                     modifier = Modifier.padding(16.dp),
-                    color = MaterialTheme.colorScheme.onErrorContainer
+                    color = MaterialTheme.colorScheme.onError
                 )
             }
         }
@@ -356,7 +369,7 @@ private fun SelfDirectedPlanForm(
                 .fillMaxWidth()
                 .height(56.dp),
             enabled = !isLoading && name.isNotBlank(),
-            shape = RoundedCornerShape(8.dp)
+            shape = MaterialTheme.shapes.medium
         ) {
             if (isLoading) {
                 Row(
@@ -399,7 +412,8 @@ private fun ProgrammedPlanForm(
             Text(
                 text = "Programmed Plan",
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             TextButton(onClick = onNavigateBack) {
@@ -409,9 +423,9 @@ private fun ProgrammedPlanForm(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
+            shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
             )
         ) {
             Column(
@@ -455,7 +469,8 @@ private fun PreBuiltProgramForm(
             Text(
                 text = "Pre-Built Programs",
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             TextButton(onClick = onNavigateBack) {
@@ -465,7 +480,7 @@ private fun PreBuiltProgramForm(
 
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
+            shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             )
