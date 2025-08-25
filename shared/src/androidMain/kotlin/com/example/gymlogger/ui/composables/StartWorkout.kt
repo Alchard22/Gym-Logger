@@ -462,30 +462,28 @@ fun StartWorkout(
                 SelectedExerciseCard(
                     selectedExercise = selectedExercises[index],
                     onSetChange = { setIndex, updatedSet ->
-                        val updatedExercise = selectedExercises[index].copy()
-                        updatedExercise.sets[setIndex] = updatedSet
                         selectedExercises = selectedExercises.toMutableList().apply {
-                            this[index] = updatedExercise
+                            this[index] = this[index].copy(
+                                sets = this[index].sets.toMutableList().apply {
+                                    this[setIndex] = updatedSet
+                                }
+                            )
                         }
                     },
                     onAddSet = {
-                        val updatedExercise = selectedExercises[index].copy()
-                        updatedExercise.sets.add(
-                            WorkoutSetData(setNumber = updatedExercise.sets.size + 1)
-                        )
                         selectedExercises = selectedExercises.toMutableList().apply {
-                            this[index] = updatedExercise
+                            this[index] = this[index].copy(
+                                sets = (this[index].sets + WorkoutSetData(setNumber = this[index].sets.size + 1)).toMutableList()
+                            )
                         }
                     },
                     onRemoveSet = { setIndex ->
-                        val updatedExercise = selectedExercises[index].copy()
-                        updatedExercise.sets.removeAt(setIndex)
-                        // Renumber sets
-                        updatedExercise.sets.forEachIndexed { idx, set ->
-                            set.setNumber = idx + 1
-                        }
                         selectedExercises = selectedExercises.toMutableList().apply {
-                            this[index] = updatedExercise
+                            val updatedSets = this[index].sets.filterIndexed { idx, _ -> idx != setIndex }
+                                .mapIndexed { idx, set -> set.copy(setNumber = idx + 1) }
+                                .toMutableList()
+
+                            this[index] = this[index].copy(sets = updatedSets)
                         }
                     },
                     onRemoveExercise = {
@@ -535,72 +533,115 @@ private fun ExerciseListItem(
     onFavoriteToggle: (Boolean) -> Unit,
     onSelect: () -> Unit
 ) {
+    var isExpanded by remember { mutableStateOf(false) }
+
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onSelect() },
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         ),
         shape = MaterialTheme.shapes.small
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = exercise.name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
-                )
-                if (exercise.muscle_group_name.isNotEmpty()) {
-                    Text(
-                        text = exercise.muscle_group_name.joinToString(", "),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
-                    )
-                }
-                exercise.description?.let { desc ->
-                    Text(
-                        text = desc,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
-                    )
-                }
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (isFavorite) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.secondary
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-
+        Column {
+            // Main item row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onSelect() }
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Expand button on the left
                 IconButton(
-                    onClick = { onFavoriteToggle(!isFavorite) },
+                    onClick = { isExpanded = !isExpanded },
                     modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
-                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                        imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = if (isExpanded) "Hide details" else "Show details",
                         modifier = Modifier.size(16.dp),
-                        tint = if (isFavorite) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = exercise.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                    if (exercise.muscle_group_name.isNotEmpty()) {
+                        Text(
+                            text = exercise.muscle_group_name.joinToString(", "),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1
+                        )
+                    }
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (isFavorite) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+
+                    IconButton(
+                        onClick = { onFavoriteToggle(!isFavorite) },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                            modifier = Modifier.size(16.dp),
+                            tint = if (isFavorite) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            // Expanded details
+            AnimatedVisibility(visible = isExpanded) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    exercise.description?.let { desc ->
+                        Text(
+                            text = desc,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    if (!exercise.video_link.isNullOrBlank()) {
+                        OutlinedButton(
+                            onClick = {
+                                // TODO Handle video link click
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Link to Video")
+                        }
+                    }
                 }
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -611,6 +652,8 @@ private fun SelectedExerciseCard(
     onRemoveSet: (Int) -> Unit,
     onRemoveExercise: () -> Unit
 ) {
+    var showInfoDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -632,19 +675,33 @@ private fun SelectedExerciseCard(
                     text = selectedExercise.exercise.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.weight(1f)
                 )
 
-                IconButton(
-                    onClick = onRemoveExercise,
-                    modifier = Modifier.size(24.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove exercise",
-                        modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.error
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Info Button
+                    TextButton(
+                        onClick = { showInfoDialog = true }
+                    ) {
+                        Text(
+                            "Info",
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onRemoveExercise,
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Remove exercise",
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
 
@@ -674,7 +731,81 @@ private fun SelectedExerciseCard(
             }
         }
     }
+
+    // Exercise Info Dialog
+    if (showInfoDialog) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = MaterialTheme.shapes.medium,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = selectedExercise.exercise.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    IconButton(
+                        onClick = { showInfoDialog = false },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+
+                if (selectedExercise.exercise.muscle_group_name.isNotEmpty()) {
+                    Text(
+                        text = "Muscle Groups: ${selectedExercise.exercise.muscle_group_name.joinToString(", ")}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                selectedExercise.exercise.description?.let { desc ->
+                    Text(
+                        text = desc,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                if (!selectedExercise.exercise.video_link.isNullOrBlank()) {
+                    OutlinedButton(
+                        onClick = {
+                            // TODO Handle video link click
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Link to Video")
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -814,8 +945,8 @@ private fun WorkoutSetRow(
                     // Notes Field
                     OutlinedTextField(
                         value = setData.notes,
-                        onValueChange = {
-                            onSetChange(setData.copy(notes = it))
+                        onValueChange = { newNotes ->
+                            onSetChange(setData.copy(notes = newNotes))
                         },
                         label = { Text("Notes") },
                         placeholder = { Text("Form notes, feelings, etc.") },
