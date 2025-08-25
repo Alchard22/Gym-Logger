@@ -943,6 +943,9 @@ VALUES(?, ?, ?, ?, ?);
 selectWorkoutTemplateById:
 SELECT * FROM WorkoutTemplate WHERE id = ?;
 
+selectWorkoutSessionMuscleGroupById:
+SELECT * FROM WorkoutSessionMuscleGroup WHERE workout_session_id = ?;
+
 -- Delete workout sessions for a training plan
 deleteWorkoutSessionsForPlan:
 DELETE FROM WorkoutSession
@@ -979,6 +982,21 @@ FROM Exercise e
 JOIN ExerciseMuscleGroup emg ON e.id = emg.exercise_id
 JOIN MuscleGroup mg ON emg.muscle_group_id = mg.id
 WHERE e.id = ?;
+
+selectAllExerciseWithMuscleGroups:
+SELECT
+    e.id,
+    e.name,
+    e.aliases,
+    e.description,
+    e.video_link,
+    mg.id AS muscle_group_id,
+    mg.name AS muscle_group_name,
+    mg.category AS muscle_group_category,
+    emg.involvement_type
+FROM Exercise e
+JOIN ExerciseMuscleGroup emg ON e.id = emg.exercise_id
+JOIN MuscleGroup mg ON emg.muscle_group_id = mg.id;
 
 -- Workout Sets
 selectWorkoutSetsForSession:

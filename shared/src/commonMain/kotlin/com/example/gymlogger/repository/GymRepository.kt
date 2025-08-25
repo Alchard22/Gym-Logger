@@ -8,6 +8,8 @@ import database.TrainingPlan
 import database.WorkoutSession
 import database.WorkoutSet
 import database.MuscleGroup
+import database.SelectAllExerciseWithMuscleGroups
+import database.WorkoutSessionMuscleGroup
 import database.WorkoutTemplate
 import database.WorkoutTemplateExercise
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +23,12 @@ class GymRepository(private val database: GymDatabase) {
 
     fun getAllMuscleGroups(): Flow<List<MuscleGroup>> {
         return database.gymDatabaseQueries.selectAllMuscleGroups()
+            .asFlow()
+            .mapToList(Dispatchers.Default)
+    }
+
+    fun getAllExercisesWithMuscleGroups(): Flow<List<SelectAllExerciseWithMuscleGroups>> {
+        return database.gymDatabaseQueries.selectAllExerciseWithMuscleGroups()
             .asFlow()
             .mapToList(Dispatchers.Default)
     }
@@ -126,6 +134,12 @@ class GymRepository(private val database: GymDatabase) {
         return withContext(Dispatchers.Default) {
             database.gymDatabaseQueries.selectWorkoutSessionById(id).executeAsOneOrNull()
         }
+    }
+
+    fun getWorkoutSessionMuscleGroup(id: Long): Flow<List<WorkoutSessionMuscleGroup?>> {
+        return database.gymDatabaseQueries.selectWorkoutSessionMuscleGroupById(id)
+                .asFlow()
+                .mapToList(Dispatchers.Default)
     }
 
     // Get workout templates for a training plan
@@ -319,4 +333,10 @@ data class ExerciseWithMuscleGroup(
     val exercise: Exercise,
     val muscleGroupName: String,
     val involvementType: String,
+)
+
+// Data class for exercise object with muscle group object
+data class ExerciseWithMuscleGroupDetailed(
+    val exercise: Exercise,
+    val muscleGroup: MuscleGroup
 )

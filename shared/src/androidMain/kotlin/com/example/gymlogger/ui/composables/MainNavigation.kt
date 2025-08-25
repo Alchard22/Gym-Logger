@@ -87,5 +87,22 @@ fun MainNavigation(
                     navController.popBackStack()
                 })
         }
+
+        composable(
+            route = "start_workout/{planId}",
+            arguments = listOf(navArgument("planId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val planId = backStackEntry.arguments?.getLong("planId") ?: return@composable
+
+            StartWorkout(
+                workoutSessionId = planId,
+                repository = gymRepository,
+                onWorkoutCompleted = {
+                    navController.navigate("workout_completed/$planId") //TODO Analytics
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                })
+        }
     }
 }
