@@ -47,8 +47,7 @@ fun MainNavigation(
                 planId = planId,
                 repository = gymRepository,
                 onStartWorkout = { planId ->
-                    // Navigate to workout creation/logging
-                    navController.navigate("start_workout/$planId")
+                    navController.navigate("new_workout/$planId")
                 },
                 onNavigateBack = {
                     navController.popBackStack()
@@ -72,12 +71,21 @@ fun MainNavigation(
             )
         }
 
-        // Start workout (placeholder for workout logging screen)
         composable(
-            route = "start_workout/{planId}",
+            route = "new_workout/{planId}",
             arguments = listOf(navArgument("planId") { type = NavType.LongType })
         ) { backStackEntry ->
             val planId = backStackEntry.arguments?.getLong("planId") ?: return@composable
+
+            NewWorkout(
+                planId = planId,
+                repository = gymRepository,
+                onWorkoutCreated = { planId ->
+                    navController.navigate("start_workout/$planId")
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                })
         }
     }
 }

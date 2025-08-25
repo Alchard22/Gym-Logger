@@ -2,7 +2,7 @@
 CREATE TABLE MuscleGroup (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
-    category TEXT -- 'upper', 'lower', 'core'
+    category TEXT
 );
 
 -- Training Plans
@@ -100,23 +100,32 @@ CREATE TABLE WorkoutSetMuscleGroup (
 
 -- Seed data for muscle groups
 INSERT INTO MuscleGroup(name, category) VALUES
-('Push', 'push'),
-('Pull', 'pull'),
-('Legs', 'legs'),
-('Chest', 'push'),
-('Side Delts', 'push'),
-('Front Delts', 'push'),
-('Rear Delts', 'pull'),
-('Back', 'pull'),
-('Forearms', 'pull'),
-('Shoulders', 'push'),
-('Biceps', 'pull'),
-('Triceps', 'push'),
-('Quadriceps', 'legs'),
-('Hamstrings', 'legs'),
-('Glutes', 'legs'),
-('Calves', 'legs'),
-('Core', 'core');
+-- Primary Categories
+('Push', 'primary'),
+('Pull', 'primary'),
+('Legs', 'primary'),
+('Full Body', 'primary'),
+
+-- Secondary Categories (common combinations)
+('Upper Body', 'secondary'),
+('Lower Body', 'secondary'),
+('Arms', 'secondary'),
+('Core', 'secondary'),
+
+-- Specific Groups (individual muscles)
+('Chest', 'specific'),
+('Shoulders', 'specific'),
+('Triceps', 'specific'),
+('Back', 'specific'),
+('Biceps', 'specific'),
+('Rear Delts', 'specific'),
+('Forearms', 'specific'),
+('Quadriceps', 'specific'),
+('Hamstrings', 'specific'),
+('Glutes', 'specific'),
+('Calves', 'specific'),
+('Abs', 'specific'),
+('Obliques', 'specific');
 
 -- Basic queries
 selectAllMuscleGroups:
