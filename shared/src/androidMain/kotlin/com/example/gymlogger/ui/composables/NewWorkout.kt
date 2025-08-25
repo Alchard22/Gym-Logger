@@ -468,7 +468,8 @@ private fun MuscleGroupChip(
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             }
         } else null,
@@ -476,14 +477,14 @@ private fun MuscleGroupChip(
             containerColor = if (isHighlighted && isSelected) {
                 MaterialTheme.colorScheme.primaryContainer
             } else if (isSelected) {
-                MaterialTheme.colorScheme.secondaryContainer
+                MaterialTheme.colorScheme.secondary
             } else {
                 MaterialTheme.colorScheme.surface
             },
             labelColor = if (isHighlighted && isSelected) {
                 MaterialTheme.colorScheme.onPrimaryContainer
             } else if (isSelected) {
-                MaterialTheme.colorScheme.onSecondaryContainer
+                MaterialTheme.colorScheme.secondary
             } else {
                 MaterialTheme.colorScheme.onSurface
             }
