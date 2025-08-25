@@ -177,47 +177,6 @@ fun StartWorkout(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Complete Workout Button - Top Left
-                        if (selectedExercises.isNotEmpty()) {
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        // Save all workout sets
-                                        selectedExercises.forEach { selectedExercise ->
-                                            selectedExercise.sets.forEach { setData ->
-                                                if (setData.reps.isNotBlank() && setData.weight.isNotBlank()) {
-                                                    repository.insertWorkoutSet(
-                                                        workoutSessionId = workoutSessionId,
-                                                        exerciseId = selectedExercise.exercise.id,
-                                                        setNumber = setData.setNumber.toLong(),
-                                                        reps = setData.reps.toLongOrNull() ?: 0,
-                                                        weight = setData.weight.toDoubleOrNull() ?: 0.0,
-                                                        intensity = null,
-                                                        restSeconds = setData.restSeconds.toLongOrNull()
-                                                    )
-                                                }
-                                            }
-                                        }
-                                        onWorkoutCompleted()
-                                    }
-                                },
-                                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Complete")
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.weight(1f))
-
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -253,6 +212,48 @@ fun StartWorkout(
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.padding(2.dp))
+
+                if (selectedExercises.isNotEmpty()) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth().height(30.dp).padding(0.dp),
+                        shape = MaterialTheme.shapes.medium,
+                        onClick = {
+                            scope.launch {
+                                // Save all workout sets
+                                selectedExercises.forEach { selectedExercise ->
+                                    selectedExercise.sets.forEach { setData ->
+                                        if (setData.reps.isNotBlank() && setData.weight.isNotBlank()) {
+                                            repository.insertWorkoutSet(
+                                                workoutSessionId = workoutSessionId,
+                                                exerciseId = selectedExercise.exercise.id,
+                                                setNumber = setData.setNumber.toLong(),
+                                                reps = setData.reps.toLongOrNull() ?: 0,
+                                                weight = setData.weight.toDoubleOrNull() ?: 0.0,
+                                                intensity = null,
+                                                restSeconds = setData.restSeconds.toLongOrNull()
+                                            )
+                                        }
+                                    }
+                                }
+                                onWorkoutCompleted()
+                            }
+                        },
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Save and Exit Workout")
+                    }
+                }
             }
 
             // Exercise Selection Card
@@ -272,7 +273,7 @@ fun StartWorkout(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { isExerciseSelectionExpanded = !isExerciseSelectionExpanded }
-                                .padding(20.dp)
+                                .padding(10.dp)
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
