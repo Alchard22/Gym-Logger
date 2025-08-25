@@ -211,6 +211,18 @@ class GymRepository(private val database: GymDatabase) {
         }
     }
 
+    suspend fun updateExercise(
+        id: Long,
+        name: String,
+        description: String,
+        videoLink: String?,
+        favourite: Long
+    ) {
+        withContext(Dispatchers.Default) {
+            database.gymDatabaseQueries.updateExercise(name, description, videoLink, favourite, id)
+        }
+    }
+
     suspend fun getExercise(id: Long): Exercise? {
         return withContext(Dispatchers.Default) {
             database.gymDatabaseQueries.selectExerciseById(id).executeAsOneOrNull()
@@ -229,7 +241,8 @@ class GymRepository(private val database: GymDatabase) {
                             name = row.name,
                             aliases = row.aliases,
                             description = row.description,
-                            video_link = row.video_link
+                            video_link = row.video_link,
+                            favourite = null
                         ),
                         muscleGroupName = row.muscle_group_name,
                         involvementType = row.involvement_type
@@ -333,10 +346,4 @@ data class ExerciseWithMuscleGroup(
     val exercise: Exercise,
     val muscleGroupName: String,
     val involvementType: String,
-)
-
-// Data class for exercise object with muscle group object
-data class ExerciseWithMuscleGroupDetailed(
-    val exercise: Exercise,
-    val muscleGroup: MuscleGroup
 )

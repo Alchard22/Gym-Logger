@@ -37,7 +37,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,6 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.gymlogger.database.ExerciseGroupedWithMuscleGroups
 import com.example.gymlogger.repository.ExerciseWithMuscleGroup
 import com.example.gymlogger.repository.GymRepository
 import com.example.gymlogger.ui.Animations
@@ -69,7 +69,7 @@ import database.WorkoutSession
 import kotlinx.coroutines.launch
 
 data class SelectedExercise(
-    val exercise: SelectAllExerciseWithMuscleGroups,
+    val exercise: ExerciseGroupedWithMuscleGroups,
     val sets: MutableList<WorkoutSetData> = mutableListOf()
 )
 
@@ -96,30 +96,46 @@ fun StartWorkout(
     var isExerciseSelectionExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var showAddExerciseDialog by remember { mutableStateOf(false) }
-    var favoriteExercises by remember { mutableStateOf<Set<Long>>(emptySet()) }
     var showAllExercises by remember { mutableStateOf(false) }
 
     val workoutSessions by repository.getWorkoutSessionMuscleGroup(workoutSessionId).collectAsState(initial = emptyList())
     val getAllExercisesWithMusclesGroups by repository.getAllExercisesWithMuscleGroups().collectAsState(initial = emptyList())
-//    val allExercises by repository.getAllExercises().collectAsState(initial = emptyList())
     val allMuscleGroups by repository.getAllMuscleGroups().collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
 
     val selectedMuscleGroups: Set<Long> = workoutSessions.map { it!!.muscle_group_id }.toSet()
 
-    // Load workout session details
+    // Load workout session details and favorite exercises
     LaunchedEffect(workoutSessionId) {
         workoutSession = repository.getWorkoutSession(workoutSessionId)
-        // Load favorite exercises (you might want to persist this)
-        favoriteExercises = setOf(1L, 2L, 3L) // Example favorites
+        // Load favorite exercises from database
+    }
+
+    // Group exercises by id to remove duplicates and combine muscle groups
+    val groupedExercises = remember(getAllExercisesWithMusclesGroups) {
+        getAllExercisesWithMusclesGroups.groupBy { it.id }.map { (_, exercises) ->
+            val first = exercises.first()
+            ExerciseGroupedWithMuscleGroups(
+                id = first.id,
+                name = first.name,
+                aliases = first.aliases,
+                description = first.description,
+                video_link = first.video_link,
+                favourite = (first.favourite ?: 0).toInt(),
+                muscle_group_id = exercises.map { it.muscle_group_id },
+                muscle_group_name = exercises.map { it.muscle_group_name },
+                muscle_group_category = exercises.map { it.muscle_group_category },
+                involvement_type = first.involvement_type
+            )
+        }
     }
 
     // Filter and sort exercises by muscle groups, then favorites, then alphabetically
-    val filteredExercises = remember(getAllExercisesWithMusclesGroups, searchQuery, favoriteExercises, selectedMuscleGroups) {
+    val filteredExercises = remember(groupedExercises, searchQuery, selectedMuscleGroups) {
         val filtered = if (searchQuery.isBlank()) {
-            getAllExercisesWithMusclesGroups
+            groupedExercises
         } else {
-            getAllExercisesWithMusclesGroups.filter {
+            groupedExercises.filter {
                 it.name.contains(searchQuery, ignoreCase = true) ||
                         it.aliases?.contains(searchQuery, ignoreCase = true) == true
             }
@@ -127,13 +143,13 @@ fun StartWorkout(
 
         // Sort: muscle group match first, then favorites, then alphabetically
         filtered.sortedWith(
-            compareByDescending<SelectAllExerciseWithMuscleGroups> { exercise ->
+            compareByDescending<ExerciseGroupedWithMuscleGroups> { exercise ->
                 // Muscle group match: if selectedMuscleGroups is empty, treat as "match all"
                 if (selectedMuscleGroups.isEmpty()) false
-                else exercise.muscle_group_id in selectedMuscleGroups
+                else exercise.muscle_group_id.any { it in selectedMuscleGroups }
             }.thenBy { exercise ->
                 // Favorites first
-                if (exercise.id in favoriteExercises) 0 else 1
+                if (exercise.favourite == 1) 0 else 1
             }.thenBy { it.name }
         )
     }
@@ -161,7 +177,48 @@ fun StartWorkout(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        // Complete Workout Button - Top Left
+                        if (selectedExercises.isNotEmpty()) {
+                            Button(
+                                onClick = {
+                                    scope.launch {
+                                        // Save all workout sets
+                                        selectedExercises.forEach { selectedExercise ->
+                                            selectedExercise.sets.forEach { setData ->
+                                                if (setData.reps.isNotBlank() && setData.weight.isNotBlank()) {
+                                                    repository.insertWorkoutSet(
+                                                        workoutSessionId = workoutSessionId,
+                                                        exerciseId = selectedExercise.exercise.id,
+                                                        setNumber = setData.setNumber.toLong(),
+                                                        reps = setData.reps.toLongOrNull() ?: 0,
+                                                        weight = setData.weight.toDoubleOrNull() ?: 0.0,
+                                                        intensity = null,
+                                                        restSeconds = setData.restSeconds.toLongOrNull()
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        onWorkoutCompleted()
+                                    }
+                                },
+                                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Complete")
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -185,6 +242,8 @@ fun StartWorkout(
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                             )
                         }
+
+                        Spacer(modifier = Modifier.weight(1f))
 
                         TextButton(onClick = onNavigateBack) {
                             Text(
@@ -310,14 +369,28 @@ fun StartWorkout(
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    if (favoriteExercises.isNotEmpty()) {
-                                        Text(
-                                            text = "Favorites",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.padding(vertical = 4.dp)
-                                        )
+                                    // Show Less toggle
+                                    if (filteredExercises.size > 6 && showAllExercises) {
+                                        Card(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable { showAllExercises = !showAllExercises },
+                                            colors = CardDefaults.cardColors(
+                                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                                            ),
+                                            shape = MaterialTheme.shapes.small
+                                        ) {
+                                            Text(
+                                                text =
+                                                    "Show less exercises",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                textAlign = TextAlign.Center,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(vertical = 12.dp)
+                                            )
+                                        }
                                     }
 
                                     val exercisesToShow = if (showAllExercises) filteredExercises else filteredExercises.take(6)
@@ -325,12 +398,14 @@ fun StartWorkout(
                                     exercisesToShow.forEach { exercise ->
                                         ExerciseListItem(
                                             exercise = exercise,
-                                            isFavorite = exercise.id in favoriteExercises,
+                                            isFavorite = exercise.favourite == 1,
                                             onFavoriteToggle = { isFavorite ->
-                                                favoriteExercises = if (isFavorite) {
-                                                    favoriteExercises + exercise.id
-                                                } else {
-                                                    favoriteExercises - exercise.id
+                                                scope.launch {
+                                                    if (isFavorite) {
+                                                        repository.updateExercise(exercise.id, exercise.name, exercise.description!!, exercise.video_link, 1)
+                                                    } else {
+                                                        repository.updateExercise(exercise.id, exercise.name, exercise.description!!, exercise.video_link, 0)
+                                                    }
                                                 }
                                             },
                                             onSelect = {
@@ -419,45 +494,9 @@ fun StartWorkout(
                 )
             }
 
-            // Bottom padding for floating button
+            // Bottom padding
             item {
-                Spacer(modifier = Modifier.height(80.dp))
-            }
-        }
-
-        // Complete Workout Button
-        if (selectedExercises.isNotEmpty()) {
-            FloatingActionButton(
-                onClick = {
-                    scope.launch {
-                        // Save all workout sets
-                        selectedExercises.forEach { selectedExercise ->
-                            selectedExercise.sets.forEach { setData ->
-                                if (setData.reps.isNotBlank() && setData.weight.isNotBlank()) {
-                                    repository.insertWorkoutSet(
-                                        workoutSessionId = workoutSessionId,
-                                        exerciseId = selectedExercise.exercise.id,
-                                        setNumber = setData.setNumber.toLong(),
-                                        reps = setData.reps.toLongOrNull() ?: 0,
-                                        weight = setData.weight.toDoubleOrNull() ?: 0.0,
-                                        intensity = null,
-                                        restSeconds = setData.restSeconds.toLongOrNull()
-                                    )
-                                }
-                            }
-                        }
-                        onWorkoutCompleted()
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Complete Workout"
-                )
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -475,7 +514,7 @@ fun StartWorkout(
                         videoLink = null
                     )
 
-                    selectedMuscleGroups.forEach { muscleGroupId -> // TODO this looks wrong
+                    selectedMuscleGroups.forEach { muscleGroupId ->
                         repository.linkExerciseToMuscleGroup(
                             exerciseId = exerciseId,
                             muscleGroupId = muscleGroupId,
@@ -491,7 +530,7 @@ fun StartWorkout(
 
 @Composable
 private fun ExerciseListItem(
-    exercise: SelectAllExerciseWithMuscleGroups,
+    exercise: ExerciseGroupedWithMuscleGroups,
     isFavorite: Boolean,
     onFavoriteToggle: (Boolean) -> Unit,
     onSelect: () -> Unit
@@ -518,6 +557,14 @@ private fun ExerciseListItem(
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium
                 )
+                if (exercise.muscle_group_name.isNotEmpty()) {
+                    Text(
+                        text = exercise.muscle_group_name.joinToString(", "),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
+                }
                 exercise.description?.let { desc ->
                     Text(
                         text = desc,

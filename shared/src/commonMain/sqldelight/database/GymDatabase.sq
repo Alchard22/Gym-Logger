@@ -55,7 +55,8 @@ CREATE TABLE Exercise (
     name TEXT NOT NULL,
     aliases TEXT,
     description TEXT,
-    video_link TEXT
+    video_link TEXT,
+    favourite INTEGER
 );
 
 -- Sets performed in a workout
@@ -969,6 +970,11 @@ SELECT * FROM Exercise WHERE id = ?;
 insertExercise:
 INSERT INTO Exercise(name, description, video_link) VALUES(?, ?, ?);
 
+updateExercise:
+UPDATE Exercise
+SET name = ?, description =? , video_link = ?, favourite = ?
+WHERE id = ?;
+
 selectExerciseWithMuscleGroups:
 SELECT
     e.id,
@@ -990,6 +996,7 @@ SELECT
     e.aliases,
     e.description,
     e.video_link,
+    e.favourite,
     mg.id AS muscle_group_id,
     mg.name AS muscle_group_name,
     mg.category AS muscle_group_category,
