@@ -921,8 +921,8 @@ private fun WorkoutSetRow(
                                     onSetChange(setData.copy(intensity = newValue))
                                 }
                             },
-                            label = { Text("Intensity") },
-                            placeholder = { Text("RPE 1-10") },
+                            label = { Text("Intensity", fontSize = 12.sp) },
+                            placeholder = { Text("RPE 1-10", fontSize = 12.sp) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.weight(1f),
                             singleLine = true,
@@ -937,7 +937,7 @@ private fun WorkoutSetRow(
                                     onSetChange(setData.copy(restSeconds = newValue))
                                 }
                             },
-                            label = { Text("Rest (s)") },
+                            label = { Text("Rest (s), fontSize = 12.sp") },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.weight(1f),
                             singleLine = true,
@@ -951,8 +951,8 @@ private fun WorkoutSetRow(
                         onValueChange = { newNotes ->
                             onSetChange(setData.copy(notes = newNotes))
                         },
-                        label = { Text("Notes") },
-                        placeholder = { Text("Form notes, feelings, etc.") },
+                        label = { Text("Notes", fontSize = 12.sp) },
+                        placeholder = { Text("Form notes, feelings, etc.", fontSize = 12.sp) },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 2,
                         shape = MaterialTheme.shapes.extraSmall
