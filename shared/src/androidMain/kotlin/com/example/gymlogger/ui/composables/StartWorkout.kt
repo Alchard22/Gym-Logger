@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -58,6 +59,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.gymlogger.database.ExerciseGroupedWithMuscleGroups
 import com.example.gymlogger.repository.ExerciseWithMuscleGroup
 import com.example.gymlogger.repository.GymRepository
@@ -251,7 +253,7 @@ fun StartWorkout(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Save and Exit Workout")
+                        Text("Save and Exit Workout", modifier = Modifier.offset(y = (-2).dp))
                     }
                 }
             }
@@ -850,7 +852,7 @@ private fun WorkoutSetRow(
                             onSetChange(setData.copy(reps = newValue))
                         }
                     },
-                    label = { Text("Reps") },
+                    label = { Text("Reps", fontSize = 12.sp) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.weight(1f),
                     singleLine = true,
@@ -865,7 +867,7 @@ private fun WorkoutSetRow(
                             onSetChange(setData.copy(weight = newValue))
                         }
                     },
-                    label = { Text("Weight") },
+                    label = { Text("Weight", fontSize = 12.sp) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.weight(1f),
                     singleLine = true,
