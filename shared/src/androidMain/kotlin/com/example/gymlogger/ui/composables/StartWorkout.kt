@@ -2,6 +2,14 @@ package com.example.gymlogger.ui.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +27,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -55,6 +64,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -69,6 +79,8 @@ import database.MuscleGroup
 import database.SelectAllExerciseWithMuscleGroups
 import database.WorkoutSession
 import kotlinx.coroutines.launch
+import kotlinx.datetime.minus
+import kotlinx.datetime.toLocalDateTime
 
 data class SelectedExercise(
     val exercise: ExerciseGroupedWithMuscleGroups,
@@ -83,7 +95,6 @@ data class WorkoutSetData(
     var restSeconds: String = "60",
     var notes: String = ""
 )
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun StartWorkout(
@@ -99,6 +110,7 @@ fun StartWorkout(
     var searchQuery by remember { mutableStateOf("") }
     var showAddExerciseDialog by remember { mutableStateOf(false) }
     var showAllExercises by remember { mutableStateOf(false) }
+    var isPreviousWorkoutsExpanded by remember { mutableStateOf(false) }
 
     val workoutSessions by repository.getWorkoutSessionMuscleGroup(workoutSessionId).collectAsState(initial = emptyList())
     val getAllExercisesWithMusclesGroups by repository.getAllExercisesWithMuscleGroups().collectAsState(initial = emptyList())
@@ -112,6 +124,15 @@ fun StartWorkout(
         workoutSession = repository.getWorkoutSession(workoutSessionId)
         // Load favorite exercises from database
     }
+
+    // Get previous workouts for this training plan
+    val previousWorkouts by remember(workoutSession?.training_plan_id) {
+        if (workoutSession?.training_plan_id != null) {
+            repository.getWorkoutSessionsForPlan(workoutSession!!.training_plan_id!!)
+        } else {
+            repository.getAllWorkoutSessions()
+        }
+    }.collectAsState(initial = emptyList())
 
     // Group exercises by id to remove duplicates and combine muscle groups
     val groupedExercises = remember(getAllExercisesWithMusclesGroups) {
@@ -160,7 +181,8 @@ fun StartWorkout(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .padding(bottom = if (isPreviousWorkoutsExpanded) 300.dp else 80.dp), // Add padding for the bottom tab
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Header Card
@@ -500,6 +522,15 @@ fun StartWorkout(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
+
+        // Previous Workouts Bottom Tab
+        PreviousWorkoutsBottomTab(
+            isExpanded = isPreviousWorkoutsExpanded,
+            onExpandedChange = { isPreviousWorkoutsExpanded = it },
+            previousWorkouts = previousWorkouts.filter { it.id != workoutSessionId }, // Exclude current session
+            modifier = Modifier.align(Alignment.BottomCenter),
+            repository = repository
+        )
     }
 
     // Add Exercise Dialog (simplified version)
@@ -528,6 +559,7 @@ fun StartWorkout(
         )
     }
 }
+
 
 @Composable
 private fun ExerciseListItem(
@@ -1055,5 +1087,324 @@ private fun AddExerciseDialog(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PreviousWorkoutsBottomTab(
+    isExpanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    previousWorkouts: List<WorkoutSession>,
+    repository: GymRepository,
+    modifier: Modifier = Modifier
+) {
+    val animations = Animations()
+
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        // Backdrop overlay when expanded
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = animations.fadeInMenu,
+            exit = animations.fadeOutMenu
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp) // Fixed height for the backdrop
+                    .clickable { onExpandedChange(false) } // Close when tapping outside
+                    .background(Color.Black.copy(alpha = 0.3f))
+            )
+        }
+
+        // Tab Header (always visible at bottom)
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onExpandedChange(!isExpanded) }
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "See previous workouts",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Text(
+                        text = "${previousWorkouts.size} workouts in this plan",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                    )
+                }
+
+                Icon(
+                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                    contentDescription = if (isExpanded) "Collapse" else "Expand",
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+
+        // Expanded Content - slides up from the bottom
+        AnimatedVisibility(
+            visible = isExpanded,
+            enter = animations.slideInVertically,
+            exit = animations.slideOutVertically
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(350.dp)
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(
+                    topStart = 0.dp,
+                    topEnd = 0.dp,
+                    bottomStart = 0.dp,
+                    bottomEnd = 0.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    // Header with close button
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Previous Workouts",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        IconButton(
+                            onClick = { onExpandedChange(false) },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Close",
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Workout List
+                    if (previousWorkouts.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No previous workouts in this plan",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(previousWorkouts.take(5)) { workout -> // Limit to 5 for better performance
+                                PreviousWorkoutItem(
+                                    workout = workout,
+                                    repository = repository
+                                )
+                            }
+
+                            if (previousWorkouts.size > 5) {
+                                item {
+                                    Text(
+                                        text = "... and ${previousWorkouts.size - 5} more workouts",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PreviousWorkoutItem(
+    workout: WorkoutSession,
+    repository: GymRepository
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+    val workoutSets by repository.getWorkoutSetsForSession(workout.id).collectAsState(initial = emptyList())
+    val allExercises by repository.getAllExercises().collectAsState(initial = emptyList())
+
+    // Group sets by exercise for better display
+    val setsByExercise = remember(workoutSets, allExercises) {
+        workoutSets.groupBy { set ->
+            allExercises.find { it.id == set.exercise_id }
+        }.filterKeys { it != null }
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ),
+        shape = MaterialTheme.shapes.small
+    ) {
+        Column {
+            // Main workout info - clickable to expand/collapse
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isExpanded = !isExpanded }
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = workout.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = formatWorkoutDate(workout.date),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        workout.notes?.let { notes ->
+                            if (notes.isNotBlank()) {
+                                Text(
+                                    text = notes,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+
+                        Text(
+                            text = "${setsByExercise.size} exercises, ${workoutSets.size} sets",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Icon(
+                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = if (isExpanded) "Hide details" else "Show details",
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Expanded details showing exercises and sets
+            AnimatedVisibility(visible = isExpanded) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (setsByExercise.isEmpty()) {
+                        Text(
+                            text = "No sets recorded for this workout",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    } else {
+                        setsByExercise.forEach { (exercise, sets) ->
+                            exercise?.let { ex ->
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                                    ),
+                                    shape = MaterialTheme.shapes.extraSmall
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Text(
+                                            text = ex.name,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+
+                                        // Display sets in a compact format
+                                        val setsText = sets.sortedBy { it.set_number }
+                                            .joinToString(" | ") { set ->
+                                                "${set.reps} reps @ ${set.weight}kg" // TODO Set this as configrable in settings
+                                            }
+
+                                        Text(
+                                            text = setsText,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            maxLines = 2
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Helper function to format workout date
+private fun formatWorkoutDate(timestamp: Long): String {
+    val date = kotlinx.datetime.Instant.fromEpochMilliseconds(timestamp)
+    val localDate = date.toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date
+    val today = kotlinx.datetime.Clock.System.now().toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date
+
+    return when {
+        localDate == today -> "Today"
+        localDate == today.minus(kotlinx.datetime.DatePeriod(days = 1)) -> "Yesterday"
+        else -> "${localDate.dayOfMonth}/${localDate.monthNumber}/${localDate.year}"
     }
 }
