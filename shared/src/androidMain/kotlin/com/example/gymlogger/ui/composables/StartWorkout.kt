@@ -1000,7 +1000,7 @@ private fun WorkoutSetRow(
                                     onSetChange(setData.copy(restSeconds = newValue))
                                 }
                             },
-                            label = { Text("Rest (s), fontSize = 12.sp") },
+                            label = { Text("Rest (s)", fontSize = 12.sp) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.weight(1f),
                             singleLine = true,
