@@ -55,6 +55,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -78,6 +79,7 @@ import database.Exercise
 import database.MuscleGroup
 import database.SelectAllExerciseWithMuscleGroups
 import database.WorkoutSession
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
@@ -116,13 +118,49 @@ fun StartWorkout(
     val getAllExercisesWithMusclesGroups by repository.getAllExercisesWithMuscleGroups().collectAsState(initial = emptyList())
     val allMuscleGroups by repository.getAllMuscleGroups().collectAsState(initial = emptyList())
     val scope = rememberCoroutineScope()
+    var lastSavedExercises by remember { mutableStateOf<List<SelectedExercise>>(emptyList()) }
 
-    val selectedMuscleGroups: Set<Long> = workoutSessions.map { it!!.muscle_group_id }.toSet()
+    // Save function to avoid code duplication
+    suspend fun saveWorkoutSets() {
+        selectedExercises.forEach { selectedExercise ->
+            selectedExercise.sets.forEach { setData ->
+                if (setData.reps.isNotBlank() && setData.weight.isNotBlank()) {
+                    repository.insertWorkoutSet(
+                        workoutSessionId = workoutSessionId,
+                        exerciseId = selectedExercise.exercise.id,
+                        setNumber = setData.setNumber.toLong(),
+                        reps = setData.reps.toLongOrNull() ?: 0,
+                        weight = setData.weight.toDoubleOrNull() ?: 0.0,
+                        intensity = null,
+                        restSeconds = setData.restSeconds.toLongOrNull()
+                    )
+                }
+            }
+        }
+        lastSavedExercises = selectedExercises.map { it.copy() } // Update saved state
+    }
 
-    // Load workout session details and favorite exercises
-    LaunchedEffect(workoutSessionId) {
-        workoutSession = repository.getWorkoutSession(workoutSessionId)
-        // Load favorite exercises from database
+    // Auto-save on composable destruction
+    DisposableEffect(workoutSessionId) {
+        onDispose {
+            // Only save if there are unsaved changes
+            if (selectedExercises != lastSavedExercises && selectedExercises.isNotEmpty()) {
+                scope.launch {
+                    saveWorkoutSets()
+                }
+            }
+        }
+    }
+
+    // Debounced auto-save every 20 seconds when changes occur
+    LaunchedEffect(selectedExercises) {
+        if (selectedExercises.isNotEmpty() && selectedExercises != lastSavedExercises) {
+            delay(500) // 20 seconds
+            // Double-check if still different after delay (user might have continued editing)
+            if (selectedExercises != lastSavedExercises) {
+                saveWorkoutSets()
+            }
+        }
     }
 
     // Get previous workouts for this training plan
@@ -133,6 +171,14 @@ fun StartWorkout(
             repository.getAllWorkoutSessions()
         }
     }.collectAsState(initial = emptyList())
+
+    val selectedMuscleGroups: Set<Long> = workoutSessions.map { it!!.muscle_group_id }.toSet()
+
+    // Load workout session details and favorite exercises
+    LaunchedEffect(workoutSessionId) {
+        workoutSession = repository.getWorkoutSession(workoutSessionId)
+        // Load favorite exercises from database
+    }
 
     // Group exercises by id to remove duplicates and combine muscle groups
     val groupedExercises = remember(getAllExercisesWithMusclesGroups) {
@@ -245,22 +291,7 @@ fun StartWorkout(
                         shape = MaterialTheme.shapes.medium,
                         onClick = {
                             scope.launch {
-                                // Save all workout sets
-                                selectedExercises.forEach { selectedExercise ->
-                                    selectedExercise.sets.forEach { setData ->
-                                        if (setData.reps.isNotBlank() && setData.weight.isNotBlank()) {
-                                            repository.insertWorkoutSet(
-                                                workoutSessionId = workoutSessionId,
-                                                exerciseId = selectedExercise.exercise.id,
-                                                setNumber = setData.setNumber.toLong(),
-                                                reps = setData.reps.toLongOrNull() ?: 0,
-                                                weight = setData.weight.toDoubleOrNull() ?: 0.0,
-                                                intensity = null,
-                                                restSeconds = setData.restSeconds.toLongOrNull()
-                                            )
-                                        }
-                                    }
-                                }
+                                saveWorkoutSets()
                                 onWorkoutCompleted()
                             }
                         },
