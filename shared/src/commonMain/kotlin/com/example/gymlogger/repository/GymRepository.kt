@@ -295,6 +295,22 @@ class GymRepository(private val database: GymDatabase) {
         }
     }
 
+    suspend fun getLastWorkoutWithExercise(exerciseId: Long, excludeSessionId: Long): WorkoutSession? {
+        return withContext(Dispatchers.Default) {
+            database.gymDatabaseQueries.selectLastWorkoutWithExercise(
+                exerciseId,
+                excludeSessionId,
+                excludeSessionId
+            ).executeAsOneOrNull()
+        }
+    }
+
+    suspend fun getSetsForExerciseInSession(sessionId: Long, exerciseId: Long): List<WorkoutSet> {
+        return withContext(Dispatchers.Default) {
+            database.gymDatabaseQueries.selectSetsForExerciseInSession(sessionId, exerciseId).executeAsList()
+        }
+    }
+
     // === MUSCLE GROUP RELATIONSHIPS ===
 
     suspend fun linkExerciseToMuscleGroup(

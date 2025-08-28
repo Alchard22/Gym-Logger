@@ -1046,3 +1046,19 @@ SELECT * FROM WorkoutSet
 WHERE exercise_id = ?
 ORDER BY weight DESC
 LIMIT 1;
+
+selectLastWorkoutWithExercise:
+SELECT ws.*
+FROM WorkoutSession ws
+INNER JOIN WorkoutSet wset ON ws.id = wset.workout_session_id
+WHERE wset.exercise_id = ?
+  AND ws.id != ?
+  AND ws.date < (SELECT date FROM WorkoutSession WHERE id = ?)
+ORDER BY ws.date DESC
+LIMIT 1;
+
+selectSetsForExerciseInSession:
+SELECT *
+FROM WorkoutSet
+WHERE workout_session_id = ? AND exercise_id = ?
+ORDER BY set_number ASC;

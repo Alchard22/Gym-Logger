@@ -2,13 +2,6 @@ package com.example.gymlogger.ui.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.EaseInCubic
-import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,8 +9,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,6 +36,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -72,12 +68,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gymlogger.database.ExerciseGroupedWithMuscleGroups
-import com.example.gymlogger.repository.ExerciseWithMuscleGroup
 import com.example.gymlogger.repository.GymRepository
 import com.example.gymlogger.ui.Animations
-import database.Exercise
 import database.MuscleGroup
-import database.SelectAllExerciseWithMuscleGroups
 import database.WorkoutSession
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -96,6 +89,15 @@ data class WorkoutSetData(
     var intensity: String = "",
     var restSeconds: String = "60",
     var notes: String = ""
+)
+
+data class SetComparison(
+    val currentVolume: Double,
+    val previousVolume: Double,
+    val volumeChange: Double,
+    val percentageChange: Double,
+    val isImprovement: Boolean,
+    val hasPreviousData: Boolean
 )
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -152,7 +154,7 @@ fun StartWorkout(
         }
     }
 
-    // Debounced auto-save every 20 seconds when changes occur
+    // Debounced auto-save every 5 seconds when changes occur
     LaunchedEffect(selectedExercises) {
         if (selectedExercises.isNotEmpty() && selectedExercises != lastSavedExercises) {
             delay(500) // 20 seconds
@@ -163,7 +165,6 @@ fun StartWorkout(
         }
     }
 
-    // Get previous workouts for this training plan
     val previousWorkouts by remember(workoutSession?.training_plan_id) {
         if (workoutSession?.training_plan_id != null) {
             repository.getWorkoutSessionsForPlan(workoutSession!!.training_plan_id!!)
@@ -174,10 +175,8 @@ fun StartWorkout(
 
     val selectedMuscleGroups: Set<Long> = workoutSessions.map { it!!.muscle_group_id }.toSet()
 
-    // Load workout session details and favorite exercises
     LaunchedEffect(workoutSessionId) {
         workoutSession = repository.getWorkoutSession(workoutSessionId)
-        // Load favorite exercises from database
     }
 
     // Group exercises by id to remove duplicates and combine muscle groups
@@ -217,7 +216,6 @@ fun StartWorkout(
                 if (selectedMuscleGroups.isEmpty()) false
                 else exercise.muscle_group_id.any { it in selectedMuscleGroups }
             }.thenBy { exercise ->
-                // Favorites first
                 if (exercise.favourite == 1) 0 else 1
             }.thenBy { it.name }
         )
@@ -371,7 +369,6 @@ fun StartWorkout(
                             }
                         }
 
-                        // Expanded content
                         AnimatedVisibility(
                             visible = isExerciseSelectionExpanded,
                             enter = animations.fadeInMenu,
@@ -381,7 +378,6 @@ fun StartWorkout(
                                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 0.dp),
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                // Search Bar
                                 OutlinedTextField(
                                     value = searchQuery,
                                     onValueChange = { searchQuery = it },
@@ -407,7 +403,6 @@ fun StartWorkout(
                                     shape = MaterialTheme.shapes.medium
                                 )
 
-                                // Add Exercise Button
                                 OutlinedButton(
                                     onClick = { showAddExerciseDialog = true },
                                     modifier = Modifier.fillMaxWidth()
@@ -421,7 +416,6 @@ fun StartWorkout(
                                     Text("Add New Exercise")
                                 }
 
-                                // Exercise List
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
@@ -513,7 +507,6 @@ fun StartWorkout(
                 }
             }
 
-            // Selected Exercises
             items(selectedExercises.indices.toList()) { index ->
                 SelectedExerciseCard(
                     selectedExercise = selectedExercises[index],
@@ -544,17 +537,17 @@ fun StartWorkout(
                     },
                     onRemoveExercise = {
                         selectedExercises = selectedExercises.filterIndexed { i, _ -> i != index }
-                    }
+                    },
+                    workoutSessionId = workoutSessionId,
+                    repository = repository
                 )
             }
 
-            // Bottom padding
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
 
-        // Previous Workouts Bottom Tab
         PreviousWorkoutsBottomTab(
             isExpanded = isPreviousWorkoutsExpanded,
             onExpandedChange = { isPreviousWorkoutsExpanded = it },
@@ -564,7 +557,6 @@ fun StartWorkout(
         )
     }
 
-    // Add Exercise Dialog (simplified version)
     if (showAddExerciseDialog) {
         AddExerciseDialog(
             muscleGroups = allMuscleGroups,
@@ -618,7 +610,6 @@ private fun ExerciseListItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Expand button on the left
                 IconButton(
                     onClick = { isExpanded = !isExpanded },
                     modifier = Modifier.size(32.dp)
@@ -672,7 +663,6 @@ private fun ExerciseListItem(
                 }
             }
 
-            // Expanded details
             AnimatedVisibility(visible = isExpanded) {
                 Column(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -716,7 +706,9 @@ private fun SelectedExerciseCard(
     onSetChange: (Int, WorkoutSetData) -> Unit,
     onAddSet: () -> Unit,
     onRemoveSet: (Int) -> Unit,
-    onRemoveExercise: () -> Unit
+    onRemoveExercise: () -> Unit,
+    workoutSessionId: Long,
+    repository: GymRepository
 ) {
     var showInfoDialog by remember { mutableStateOf(false) }
 
@@ -746,7 +738,6 @@ private fun SelectedExerciseCard(
                 )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Info Button
                     TextButton(
                         onClick = { showInfoDialog = true }
                     ) {
@@ -771,18 +762,19 @@ private fun SelectedExerciseCard(
                 }
             }
 
-            // Sets
             selectedExercise.sets.forEachIndexed { setIndex, setData ->
                 WorkoutSetRow(
                     setData = setData,
                     onSetChange = { updatedSet -> onSetChange(setIndex, updatedSet) },
                     onRemoveSet = if (selectedExercise.sets.size > 1) {
                         { onRemoveSet(setIndex) }
-                    } else null
+                    } else null,
+                    exerciseId = selectedExercise.exercise.id,
+                    workoutSessionId = workoutSessionId,
+                    repository = repository
                 )
             }
 
-            // Add Set Button
             ElevatedButton(
                 onClick = onAddSet,
                 modifier = Modifier.fillMaxWidth()
@@ -798,7 +790,6 @@ private fun SelectedExerciseCard(
         }
     }
 
-    // Exercise Info Dialog
     if (showInfoDialog) {
         Card(
             modifier = Modifier
@@ -872,157 +863,478 @@ private fun SelectedExerciseCard(
     }
 }
 
+@Composable
+private fun PerformanceComparisonCard(
+    exerciseId: Long,
+    currentSet: WorkoutSetData,
+    setNumber: Int,
+    workoutSessionId: Long,
+    repository: GymRepository,
+    modifier: Modifier = Modifier
+) {
+    var comparison by remember(exerciseId, setNumber) { mutableStateOf<SetComparison?>(null) }
+    var showDetailDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    // Calculate comparison when current set data changes
+    LaunchedEffect(currentSet.reps, currentSet.weight, exerciseId, setNumber) {
+        if (currentSet.reps.isBlank() || currentSet.weight.isBlank()) {
+            comparison = null
+            return@LaunchedEffect
+        }
+
+        scope.launch {
+            val currentReps = currentSet.reps.toLongOrNull() ?: 0
+            val currentWeight = currentSet.weight.toDoubleOrNull() ?: 0.0
+            val currentVolume = currentReps * currentWeight
+
+            if (currentVolume <= 0) {
+                comparison = null
+                return@launch
+            }
+
+            val lastWorkout = repository.getLastWorkoutWithExercise(exerciseId, workoutSessionId)
+
+            if (lastWorkout == null) {
+                comparison = SetComparison(
+                    currentVolume = currentVolume,
+                    previousVolume = 0.0,
+                    volumeChange = 0.0,
+                    percentageChange = 0.0,
+                    isImprovement = false,
+                    hasPreviousData = false
+                )
+                return@launch
+            }
+
+            val previousSets = repository.getSetsForExerciseInSession(lastWorkout.id, exerciseId)
+            val previousSet = previousSets.getOrNull(setNumber - 1)
+
+            // Early return if no corresponding previous set exists
+            if (previousSet == null) {
+                comparison = SetComparison(
+                    currentVolume = currentVolume,
+                    previousVolume = 0.0,
+                    volumeChange = 0.0,
+                    percentageChange = 0.0,
+                    isImprovement = false,
+                    hasPreviousData = false
+                )
+                return@launch
+            }
+
+            val previousVolume = previousSet.reps * previousSet.weight
+            val volumeChange = currentVolume - previousVolume
+            val percentageChange = if (previousVolume > 0) {
+                (volumeChange / previousVolume) * 100
+            } else 0.0
+
+            comparison = SetComparison(
+                currentVolume = currentVolume,
+                previousVolume = previousVolume,
+                volumeChange = volumeChange,
+                percentageChange = percentageChange,
+                isImprovement = volumeChange > 0,
+                hasPreviousData = true
+            )
+        }
+    }
+
+    Card(
+        modifier = modifier
+            .clickable { showDetailDialog = true }
+            .animateContentSize(),
+        colors = CardDefaults.cardColors(
+            containerColor = getCardBackgroundColor(comparison)
+        ),
+        shape = MaterialTheme.shapes.small,
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = null
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            PerformanceIndicator(comparison = comparison)
+        }
+    }
+
+    if (showDetailDialog) {
+        PerformanceDetailDialog(
+            comparison = comparison,
+            currentSet = currentSet,
+            setNumber = setNumber,
+            onDismiss = { showDetailDialog = false }
+        )
+    }
+}
+
+@Composable
+private fun getCardBackgroundColor(comparison: SetComparison?): Color {
+    return when {
+        comparison == null -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+        !comparison.hasPreviousData -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+        comparison.isImprovement -> Color(0xFF4CAF50).copy(alpha = 0.2f)
+        comparison.volumeChange < 0 -> Color(0xFFf44336).copy(alpha = 0.2f)
+        else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+    }
+}
+
+@Composable
+private fun PerformanceIndicator(comparison: SetComparison?) {
+    when {
+        comparison == null -> {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = null,
+                modifier = Modifier.size(12.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            )
+        }
+
+        !comparison.hasPreviousData -> {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(1.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = null,
+                    modifier = Modifier.size(10.dp),
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = "NEW",
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+            }
+        }
+
+        comparison.volumeChange == 0.0 -> {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(1.dp)
+            ) {
+                Text(
+                    text = "=",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "SAME",
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+            }
+        }
+
+        else -> {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(1.dp)
+            ) {
+                Icon(
+                    imageVector = if (comparison.isImprovement) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(12.dp),
+                    tint = if (comparison.isImprovement) Color(0xFF4CAF50) else Color(0xFFf44336)
+                )
+                Text(
+                    text = "${if (comparison.percentageChange > 0) "+" else ""}${comparison.percentageChange.toInt()}%",
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                    color = if (comparison.isImprovement) Color(0xFF4CAF50) else Color(0xFFf44336),
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PerformanceDetailDialog(
+    comparison: SetComparison?,
+    currentSet: WorkoutSetData,
+    setNumber: Int,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Set $setNumber Performance",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        },
+        text = {
+            if (comparison?.hasPreviousData == true) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Volume Calculation: Reps × Weight",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Current:",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = "${currentSet.reps} × ${currentSet.weight} = ${comparison.currentVolume.toInt()}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Previous:",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = "${comparison.previousVolume.toInt()}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Change:",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${if (comparison.volumeChange > 0) "+" else ""}${comparison.volumeChange.toInt()} (${if (comparison.percentageChange > 0) "+" else ""}${comparison.percentageChange.toInt()}%)",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (comparison.isImprovement) Color(0xFF4CAF50) else Color(0xFFf44336),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            } else {
+                Text(
+                    text = "This is your first time performing this exercise, so there's no previous data to compare against. Keep it up!",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("OK")
+            }
+        }
+    )
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WorkoutSetRow(
     setData: WorkoutSetData,
     onSetChange: (WorkoutSetData) -> Unit,
-    onRemoveSet: (() -> Unit)? = null
+    onRemoveSet: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    exerciseId: Long,
+    workoutSessionId: Long,
+    repository: GymRepository
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        shape = MaterialTheme.shapes.small
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.Top
     ) {
-        Column(
-            modifier = Modifier.padding(12.dp)
+        Card(
+            modifier = Modifier.weight(1f),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            shape = MaterialTheme.shapes.small
         ) {
-            // Main row with reps and weight
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.padding(12.dp)
             ) {
-                // Set Number
-                Text(
-                    text = "${setData.setNumber}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.width(24.dp),
-                    textAlign = TextAlign.Center
-                )
-
-                // Reps Field
-                OutlinedTextField(
-                    value = setData.reps,
-                    onValueChange = { newValue ->
-                        if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
-                            onSetChange(setData.copy(reps = newValue))
-                        }
-                    },
-                    label = { Text("Reps", fontSize = 12.sp) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.extraSmall
-                )
-
-                // Weight Field
-                OutlinedTextField(
-                    value = setData.weight,
-                    onValueChange = { newValue ->
-                        if (newValue.matches(Regex("^\\d*\\.?\\d*$")) || newValue.isEmpty()) {
-                            onSetChange(setData.copy(weight = newValue))
-                        }
-                    },
-                    label = { Text("Weight", fontSize = 12.sp) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.extraSmall
-                )
-
-                // Expand/Collapse Button
-                IconButton(
-                    onClick = { isExpanded = !isExpanded },
-                    modifier = Modifier.size(32.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = if (isExpanded) "Hide extras" else "Show extras",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    Text(
+                        text = "${setData.setNumber}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.width(18.dp),
+                        textAlign = TextAlign.Center
                     )
-                }
 
-                // Remove Set Button
-                onRemoveSet?.let { removeSet ->
-                    IconButton(
-                        onClick = removeSet,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Remove set",
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
-            }
-
-            // Expandable extras section
-            AnimatedVisibility(visible = isExpanded) {
-                Column(
-                    modifier = Modifier.padding(top = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        // Intensity Field
-                        OutlinedTextField(
-                            value = setData.intensity,
-                            onValueChange = { newValue ->
-                                if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
-                                    onSetChange(setData.copy(intensity = newValue))
-                                }
-                            },
-                            label = { Text("Intensity", fontSize = 12.sp) },
-                            placeholder = { Text("RPE 1-10", fontSize = 12.sp) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.weight(1f),
-                            singleLine = true,
-                            shape = MaterialTheme.shapes.extraSmall
-                        )
-
-                        // Rest Field
-                        OutlinedTextField(
-                            value = setData.restSeconds,
-                            onValueChange = { newValue ->
-                                if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
-                                    onSetChange(setData.copy(restSeconds = newValue))
-                                }
-                            },
-                            label = { Text("Rest (s)", fontSize = 12.sp) },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.weight(1f),
-                            singleLine = true,
-                            shape = MaterialTheme.shapes.extraSmall
-                        )
-                    }
-
-                    // Notes Field
                     OutlinedTextField(
-                        value = setData.notes,
-                        onValueChange = { newNotes ->
-                            onSetChange(setData.copy(notes = newNotes))
+                        value = setData.reps,
+                        onValueChange = { newValue ->
+                            if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
+                                onSetChange(setData.copy(reps = newValue))
+                            }
                         },
-                        label = { Text("Notes", fontSize = 12.sp) },
-                        placeholder = { Text("Form notes, feelings, etc.", fontSize = 12.sp) },
-                        modifier = Modifier.fillMaxWidth(),
-                        maxLines = 2,
+                        label = { Text("Reps", fontSize = 12.sp) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.weight(1f).offset(y = (-4.5).dp),
+                        singleLine = true,
                         shape = MaterialTheme.shapes.extraSmall
                     )
+
+                    // Weight Field
+                    OutlinedTextField(
+                        value = setData.weight,
+                        onValueChange = { newValue ->
+                            if (newValue.matches(Regex("^\\d*\\.?\\d*$")) || newValue.isEmpty()) {
+                                onSetChange(setData.copy(weight = newValue))
+                            }
+                        },
+                        label = { Text("Weight", fontSize = 12.sp) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.weight(1f).offset(y = (-4.5).dp),
+                        singleLine = true,
+                        shape = MaterialTheme.shapes.extraSmall
+                    )
+
+                    // Expand/Collapse Button
+                    IconButton(
+                        onClick = { isExpanded = !isExpanded },
+                        modifier = Modifier.size(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = if (isExpanded) "Hide extras" else "Show extras",
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    // Remove Set Button
+                    onRemoveSet?.let { removeSet ->
+                        IconButton(
+                            onClick = removeSet,
+                            modifier = Modifier.size(16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Remove set",
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+
+                // Expandable extras section
+                AnimatedVisibility(visible = isExpanded) {
+                    Column(
+                        modifier = Modifier.padding(top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = setData.intensity,
+                                onValueChange = { newValue ->
+                                    if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
+                                        onSetChange(setData.copy(intensity = newValue))
+                                    }
+                                },
+                                label = { Text("Intensity", fontSize = 12.sp) },
+                                placeholder = { Text("RPE 1-10", fontSize = 12.sp) },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                modifier = Modifier.weight(1f),
+                                singleLine = true,
+                                shape = MaterialTheme.shapes.extraSmall
+                            )
+
+                            OutlinedTextField(
+                                value = setData.restSeconds,
+                                onValueChange = { newValue ->
+                                    if (newValue.all { it.isDigit() } || newValue.isEmpty()) {
+                                        onSetChange(setData.copy(restSeconds = newValue))
+                                    }
+                                },
+                                label = { Text("Rest (s)", fontSize = 12.sp) },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                modifier = Modifier.weight(1f),
+                                singleLine = true,
+                                shape = MaterialTheme.shapes.extraSmall
+                            )
+                        }
+
+                        // Notes Field
+                        OutlinedTextField(
+                            value = setData.notes,
+                            onValueChange = { newNotes ->
+                                onSetChange(setData.copy(notes = newNotes))
+                            },
+                            label = { Text("Notes", fontSize = 12.sp) },
+                            placeholder = { Text("Form notes, feelings, etc.", fontSize = 12.sp) },
+                            modifier = Modifier.fillMaxWidth(),
+                            maxLines = 2,
+                            shape = MaterialTheme.shapes.extraSmall
+                        )
+                    }
                 }
             }
         }
+
+        // Performance comparison card - matches the height of the main card
+        PerformanceComparisonCard(
+            exerciseId = exerciseId,
+            currentSet = setData,
+            setNumber = setData.setNumber,
+            workoutSessionId = workoutSessionId,
+            repository = repository,
+            modifier = Modifier
+                .width(40.dp)
+                .fillMaxHeight()
+        )
     }
 }
 
@@ -1143,7 +1455,7 @@ private fun PreviousWorkoutsBottomTab(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp) // Fixed height for the backdrop
+                    .height(400.dp)
                     .clickable { onExpandedChange(false) } // Close when tapping outside
                     .background(Color.Black.copy(alpha = 0.3f))
             )
@@ -1216,7 +1528,6 @@ private fun PreviousWorkoutsBottomTab(
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    // Header with close button
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -1264,7 +1575,7 @@ private fun PreviousWorkoutsBottomTab(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            items(previousWorkouts.take(5)) { workout -> // Limit to 5 for better performance
+                            items(previousWorkouts.take(25)) { workout -> // Limiter
                                 PreviousWorkoutItem(
                                     workout = workout,
                                     repository = repository
@@ -1316,7 +1627,6 @@ private fun PreviousWorkoutItem(
         shape = MaterialTheme.shapes.small
     ) {
         Column {
-            // Main workout info - clickable to expand/collapse
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -1370,7 +1680,6 @@ private fun PreviousWorkoutItem(
                 )
             }
 
-            // Expanded details showing exercises and sets
             AnimatedVisibility(visible = isExpanded) {
                 Column(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -1404,7 +1713,6 @@ private fun PreviousWorkoutItem(
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
 
-                                        // Display sets in a compact format
                                         val setsText = sets.sortedBy { it.set_number }
                                             .joinToString(" | ") { set ->
                                                 "${set.reps} reps @ ${set.weight}kg" // TODO Set this as configrable in settings
