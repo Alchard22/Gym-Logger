@@ -1714,8 +1714,8 @@ private fun PreviousWorkoutItem(
                                         )
 
                                         val setsText = sets.sortedBy { it.set_number }
-                                            .joinToString(" | ") { set ->
-                                                "${set.reps} reps @ ${set.weight}kg" // TODO Set this as configrable in settings
+                                            .joinToString("\n") { set ->
+                                                "◦ ${set.reps} reps @ ${set.weight}kg" // TODO Set this as configrable in settings
                                             }
 
                                         Text(
