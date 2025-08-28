@@ -172,9 +172,7 @@ class GymRepository(private val database: GymDatabase) {
 
             val workoutSessionId = database.gymDatabaseQueries.lastInsertRowId().executeAsOne()
 
-            // Create placeholder workout sets for each template exercise
             templateExercises.forEachIndexed { index, templateExercise ->
-                // Create sets based on template (you might want multiple sets)
                 for (setNumber in 1..(templateExercise.target_sets ?: 3)) {
                     database.gymDatabaseQueries.insertWorkoutSet(
                         workout_session_id = workoutSessionId,
@@ -295,6 +293,29 @@ class GymRepository(private val database: GymDatabase) {
         }
     }
 
+    suspend fun replaceWorkoutSetsForSession(
+        workoutSessionId: Long,
+        sets: List<WorkoutSetRepoData>
+    ) {
+        withContext(Dispatchers.Default) {
+            database.transaction {
+                database.gymDatabaseQueries.deleteWorkoutSetsForSession(workoutSessionId)
+
+                sets.forEach { setData ->
+                    database.gymDatabaseQueries.insertWorkoutSet(
+                        workout_session_id = workoutSessionId,
+                        exercise_id = setData.exerciseId,
+                        set_number = setData.setNumber,
+                        reps = setData.reps,
+                        weight = setData.weight,
+                        intensity = setData.intensity,
+                        rest_seconds = setData.restSeconds
+                    )
+                }
+            }
+        }
+    }
+
     suspend fun getLastWorkoutWithExercise(exerciseId: Long, excludeSessionId: Long): WorkoutSession? {
         return withContext(Dispatchers.Default) {
             database.gymDatabaseQueries.selectLastWorkoutWithExercise(
@@ -357,9 +378,17 @@ class GymRepository(private val database: GymDatabase) {
     }
 }
 
-// Data class for exercise with muscle group info
 data class ExerciseWithMuscleGroup(
     val exercise: Exercise,
     val muscleGroupName: String,
     val involvementType: String,
+)
+
+data class WorkoutSetRepoData(
+    val exerciseId: Long,
+    val setNumber: Long,
+    val reps: Long,
+    val weight: Double,
+    val intensity: Long?,
+    val restSeconds: Long?
 )

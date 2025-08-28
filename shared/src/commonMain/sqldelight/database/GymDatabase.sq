@@ -929,6 +929,9 @@ insertWorkoutSession:
 INSERT INTO WorkoutSession(training_plan_id, name, date, notes)
 VALUES(?, ?, ?, ?);
 
+deleteWorkoutSetsForSession:
+DELETE FROM WorkoutSet WHERE workout_session_id = ?;
+
 selectWorkoutTemplatesForPlan:
 SELECT * FROM WorkoutTemplate WHERE training_plan_id = ? ORDER BY day_of_week, week_number;
 

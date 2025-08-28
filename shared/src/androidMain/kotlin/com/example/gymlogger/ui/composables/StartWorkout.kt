@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gymlogger.database.ExerciseGroupedWithMuscleGroups
 import com.example.gymlogger.repository.GymRepository
+import com.example.gymlogger.repository.WorkoutSetRepoData
 import com.example.gymlogger.ui.Animations
 import database.MuscleGroup
 import database.WorkoutSession
@@ -124,22 +125,27 @@ fun StartWorkout(
 
     // Save function to avoid code duplication
     suspend fun saveWorkoutSets() {
+        val setsToSave = mutableListOf<WorkoutSetRepoData>()
+
         selectedExercises.forEach { selectedExercise ->
             selectedExercise.sets.forEach { setData ->
                 if (setData.reps.isNotBlank() && setData.weight.isNotBlank()) {
-                    repository.insertWorkoutSet(
-                        workoutSessionId = workoutSessionId,
-                        exerciseId = selectedExercise.exercise.id,
-                        setNumber = setData.setNumber.toLong(),
-                        reps = setData.reps.toLongOrNull() ?: 0,
-                        weight = setData.weight.toDoubleOrNull() ?: 0.0,
-                        intensity = null,
-                        restSeconds = setData.restSeconds.toLongOrNull()
+                    setsToSave.add(
+                        WorkoutSetRepoData(
+                            exerciseId = selectedExercise.exercise.id,
+                            setNumber = setData.setNumber.toLong(),
+                            reps = setData.reps.toLongOrNull() ?: 0,
+                            weight = setData.weight.toDoubleOrNull() ?: 0.0,
+                            intensity = setData.intensity.toLongOrNull(),
+                            restSeconds = setData.restSeconds.toLongOrNull(),
+                        )
                     )
                 }
             }
         }
-        lastSavedExercises = selectedExercises.map { it.copy() } // Update saved state
+
+        repository.replaceWorkoutSetsForSession(workoutSessionId, setsToSave)
+        lastSavedExercises = selectedExercises.map { it.copy() }
     }
 
     // Auto-save on composable destruction
