@@ -756,7 +756,8 @@ private fun SelectedExerciseCard(
 
                     IconButton(
                         onClick = onRemoveExercise,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier
+                            .size(24.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
@@ -1247,7 +1248,9 @@ private fun WorkoutSetRow(
                     // Expand/Collapse Button
                     IconButton(
                         onClick = { isExpanded = !isExpanded },
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier
+                            .size(16.dp)
+                            .fillMaxHeight()
                     ) {
                         Icon(
                             imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
@@ -1261,7 +1264,9 @@ private fun WorkoutSetRow(
                     onRemoveSet?.let { removeSet ->
                         IconButton(
                             onClick = removeSet,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier
+                                .size(16.dp)
+                                .fillMaxHeight()
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,

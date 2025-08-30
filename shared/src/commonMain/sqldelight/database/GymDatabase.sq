@@ -398,6 +398,495 @@ INSERT INTO Exercise(id, name, aliases, description, video_link) VALUES
   'Attach rope to high pulley. Grip rope with overhand grip, elbows tucked at sides. Push rope down until arms are fully extended, flaring rope ends apart at bottom. Return with control.',
   NULL);
 
+  INSERT INTO Exercise(id, name, aliases, description, video_link) VALUES
+  (65, 'Leg Press', 'Seated Leg Press, 45-Degree Leg Press',
+   'Sit in leg press machine with back flat against pad. Place feet on platform shoulder-width apart. Lower weight by bending knees to 90 degrees or comfortable depth. Press through heels to extend legs fully. Keep core engaged and avoid locking knees hard.',
+   NULL),
+
+  (66, 'Leg Press - Quad Focus', 'High Foot Leg Press',
+   'Position feet higher on leg press platform with narrower stance. This shifts emphasis to quadriceps. Lower weight with control and press through heels. Keep knees tracking over toes.',
+   NULL),
+
+  (67, 'Leg Press - Hamstring Focus', 'Low Foot Leg Press',
+   'Position feet lower on leg press platform with wider stance. This increases hamstring and glute activation. Focus on controlled eccentric and driving through heels.',
+   NULL),
+
+  (68, 'Leg Extension', 'Quad Extension',
+   'Sit in leg extension machine with back against pad. Position ankles under pads. Extend legs until fully straight, squeezing quadriceps at top. Lower with control. Adjust seat so knees align with machine pivot.',
+   NULL),
+
+  (69, 'Leg Curl', 'Hamstring Curl, Lying Leg Curl',
+   'Lie face down on leg curl machine with ankles under pads. Curl heels toward glutes, squeezing hamstrings at top. Lower with control. Keep hips pressed to pad throughout.',
+   NULL),
+
+  (70, 'Standing Calf Raises - Machine', 'Machine Calf Raises',
+   'Stand in calf raise machine with shoulders under pads. Rise onto toes as high as possible, squeezing calves. Hold briefly then lower slowly for full stretch. Keep movement controlled.',
+   NULL),
+
+  (71, 'Seated Calf Raises', 'Seated Calf Raise Machine',
+   'Sit in machine with knees under pads and balls of feet on platform. Raise heels as high as possible, squeezing calves. Lower slowly for stretch. Targets soleus muscle specifically.',
+   NULL),
+
+  (72, 'Hack Squat', 'Machine Hack Squat',
+   'Stand in hack squat machine with back against pad. Place feet on platform shoulder-width apart. Lower by bending knees until thighs are parallel to platform. Press through heels to return.',
+   NULL),
+
+  (73, 'Smith Machine Squats', 'Smith Squats',
+   'Position bar on upper traps in Smith machine. Stand with feet slightly forward of bar. Unhook bar and squat down, keeping knees tracking over toes. Drive through heels to stand.',
+   NULL),
+
+  (74, 'Good Mornings', 'Barbell Good Mornings',
+   'Place barbell on upper traps. Stand with feet hip-width apart. Hinge at hips while keeping slight knee bend. Lower torso until parallel to ground, then return by driving hips forward.',
+   NULL),
+
+  -- Additional Back Exercises
+  (75, 'T-Bar Rows', 'Landmine Rows',
+   'Straddle T-bar with chest up and knees slightly bent. Grip handles and pull bar to chest, squeezing shoulder blades. Lower with control. Keep torso stable throughout.',
+   NULL),
+
+  (76, 'Cable Low Rows', 'Low Cable Rows',
+   'Sit at low cable with feet on platform. Grip handle with arms extended. Pull handle to lower chest while retracting shoulder blades. Keep torso upright with slight backward lean.',
+   NULL),
+
+  (77, 'Machine Rows', 'Seated Machine Row',
+   'Sit in rowing machine with chest against pad. Grip handles and pull back, squeezing shoulder blades together. Keep elbows close to body and return with control.',
+   NULL),
+
+  (78, 'Inverted Rows', 'Bodyweight Rows, Australian Pull-ups',
+   'Lie under bar set at hip height. Grip bar with overhand grip, body straight. Pull chest to bar by squeezing shoulder blades. Lower with control. Adjust angle for difficulty.',
+   NULL),
+
+  (79, 'Hyperextensions', 'Back Extensions',
+   'Position yourself in hyperextension machine with hips at pad edge. Cross arms over chest or behind head. Lower torso until you feel stretch in hamstrings. Raise back up using glutes and lower back.',
+   NULL),
+
+  (80, 'Reverse Hyperextensions', 'Reverse Back Extensions',
+   'Lie face down on bench with hips at edge, holding bench for support. Keep legs straight and raise them up by squeezing glutes. Lower with control. Targets glutes and hamstrings.',
+   NULL),
+
+  (81, 'Wide Grip Lat Pulldowns', 'Wide Lat Pulldown',
+   'Sit at pulldown machine with wide overhand grip. Pull bar to upper chest while squeezing shoulder blades. Keep torso upright and return with control.',
+   NULL),
+
+  (82, 'Close Grip Lat Pulldowns', 'Narrow Lat Pulldown',
+   'Use narrow grip attachment on pulldown machine. Pull to chest while squeezing lats and middle traps. Keep elbows close to body.',
+   NULL),
+
+  -- Additional Chest Exercises
+  (83, 'Decline Barbell Bench Press', 'Decline Bench Press',
+   'Set bench to decline angle, secure feet. Grip bar slightly wider than shoulders. Lower bar to lower chest with control. Press up focusing on lower chest engagement.',
+   NULL),
+
+  (84, 'Incline Dumbbell Flyes', 'Incline Flyes',
+   'Set bench to incline. Hold dumbbells above chest with slight elbow bend. Lower in wide arc until chest stretch is felt. Return using same path, squeezing upper chest.',
+   NULL),
+
+  (85, 'Decline Dumbbell Flyes', 'Decline Flyes',
+   'Set bench to decline. Perform dumbbell flyes targeting lower chest fibers. Maintain slight elbow bend and control throughout range of motion.',
+   NULL),
+
+  (86, 'Cable Chest Flyes', 'Cable Flyes',
+   'Stand between cable machines with handles at chest height. Step forward with slight lean. Bring handles together in front of chest with slight elbow bend. Return with control.',
+   NULL),
+
+  (87, 'Dips', 'Parallel Bar Dips',
+   'Grip parallel bars and support body weight. Lower by bending elbows until shoulders are below elbows. Press back up to starting position. Keep body upright for chest focus.',
+   NULL),
+
+  (88, 'Chest Press Machine', 'Machine Chest Press',
+   'Sit in machine with back against pad. Grip handles at chest level. Press forward until arms are extended. Return with control. Keep shoulders back against pad.',
+   NULL),
+
+  -- Additional Shoulder Exercises
+  (89, 'Front Raises', 'Anterior Raises',
+   'Hold dumbbells at sides with slight forward lean. Raise one or both arms forward to shoulder height. Keep slight elbow bend and control throughout. Lower slowly.',
+   NULL),
+
+  (90, 'Upright Rows', 'High Pulls',
+   'Hold barbell with narrow overhand grip. Pull bar up along body to chest level, leading with elbows. Keep bar close to body and lower with control.',
+   NULL),
+
+  (91, 'Shrugs', 'Barbell Shrugs, Dumbbell Shrugs',
+   'Hold weight with arms at sides. Shrug shoulders straight up toward ears, squeezing traps at top. Lower slowly. Avoid rolling shoulders forward or backward.',
+   NULL),
+
+  (92, 'Cable Lateral Raises', 'Cable Side Raises',
+   'Stand sideways to cable machine with handle at side. Raise arm out to side until parallel to ground. Lower with control. Cable provides constant tension.',
+   NULL),
+
+  (93, 'Bent Over Lateral Raises', 'Rear Delt Raises',
+   'Bend forward at hips with dumbbells hanging down. Raise weights out to sides while squeezing rear delts. Keep slight elbow bend and control movement.',
+   NULL),
+
+  -- Additional Arm Exercises
+  (94, 'Preacher Curls', 'Preacher Bench Curls',
+   'Sit at preacher bench with armpits at top of pad. Hold barbell or dumbbells with underhand grip. Curl weight up while keeping wrists straight. Lower with control.',
+   NULL),
+
+  (95, 'Cable Bicep Curls', 'Cable Curls',
+   'Stand at cable machine with handle attached to low pulley. Curl handle up while keeping elbows at sides. Squeeze biceps at top and lower with control.',
+   NULL),
+
+  (96, 'Concentration Curls', 'Seated Concentration Curls',
+   'Sit on bench with dumbbell in one hand, elbow braced against inner thigh. Curl weight up focusing on bicep contraction. Lower slowly and maintain strict form.',
+   NULL),
+
+  (97, 'Cable Tricep Overhead Extension', 'Cable Overhead Tricep Extension',
+   'Face away from high cable with rope attachment. Keep elbows forward and extend arms overhead. Return with control, feeling stretch in triceps.',
+   NULL),
+
+  (98, 'Skull Crushers', 'Lying Tricep Extensions',
+   'Lie on bench holding barbell or dumbbells over chest. Keep elbows stationary and lower weight toward forehead. Extend arms back to starting position using triceps.',
+   NULL),
+
+  (99, 'Kickbacks', 'Tricep Kickbacks',
+   'Bend forward with dumbbell in one hand, upper arm parallel to ground. Extend forearm back until arm is straight. Return with control, keeping upper arm still.',
+   NULL),
+
+  (100, 'Wrist Curls', 'Forearm Curls',
+   'Sit with forearms on bench, wrists hanging over edge. Hold light weight and curl wrists up and down. Targets forearm flexors and extensors.',
+   NULL),
+
+  -- Machine & Cable Variations
+  (101, 'Lat Pulldown - Reverse Grip', 'Underhand Lat Pulldown',
+   'Use underhand grip on lat pulldown. Pull bar to chest while squeezing lats. This variation increases bicep involvement.',
+   NULL),
+
+  (102, 'Cable Crossovers', 'Cable Chest Crossovers',
+   'Stand between high cables with handles. Step forward and bring handles together in front of chest with slight forward lean. Focus on squeezing chest.',
+   NULL),
+
+  (103, 'Pec Deck', 'Chest Fly Machine',
+   'Sit in pec deck machine with arms against pads. Bring arms together in front of chest, squeezing pecs. Return with control.',
+   NULL),
+
+  (104, 'Machine Shoulder Press', 'Seated Machine Press',
+   'Sit in shoulder press machine with back against pad. Grip handles at shoulder level. Press up until arms are extended. Lower with control.',
+   NULL),
+
+  (105, 'Cable Shrugs', 'Cable Trap Shrugs',
+   'Stand at cable machine with bar attachment at low setting. Shrug shoulders up while holding cable handle. Provides different resistance curve than free weights.',
+   NULL),
+
+  -- Olympic & Power Movements
+  (106, 'Power Clean', 'Clean',
+   'Start with bar on ground in deadlift position. Pull bar up explosively while keeping it close to body. Catch bar at shoulder level in front squat position. Advanced movement requiring proper coaching.',
+   NULL),
+
+  (107, 'Hang Clean', 'Hang Power Clean',
+   'Start with bar at hip level. Explosively extend hips and pull bar up, catching at shoulder level. Less technical than full clean from floor.',
+   NULL),
+
+  (108, 'Push Press', 'Overhead Push Press',
+   'Hold barbell at shoulder level. Dip knees slightly then drive up while pressing bar overhead. Uses leg drive to assist overhead press.',
+   NULL),
+
+  -- Additional Functional Movements
+  (109, 'Farmer Walks', 'Farmers Carry',
+   'Hold heavy dumbbells or farmers walk handles at sides. Walk forward with good posture, keeping core tight. Excellent for grip strength and core stability.',
+   NULL),
+
+  (110, 'Suitcase Carry', 'Single Side Carry',
+   'Hold heavy dumbbell in one hand at side. Walk forward maintaining upright posture. Challenges core stability and grip strength unilaterally.',
+   NULL),
+
+  (111, 'Bear Crawl', 'Quadruped Crawl',
+   'Start on hands and knees, lift knees slightly off ground. Crawl forward using opposite hand and foot. Keep hips low and core engaged.',
+   NULL),
+
+  (112, 'Kettlebell Swings', 'KB Swings',
+   'Stand with feet wider than shoulders, kettlebell in front. Hinge at hips and swing kettlebell between legs. Drive hips forward explosively, swinging weight to chest height.',
+   NULL),
+
+  (113, 'Single Arm Kettlebell Swings', 'One Arm KB Swings',
+   'Perform kettlebell swing with one arm while other arm moves for balance. Switch arms each set. Challenges core stability more than two-handed version.',
+   NULL),
+
+  -- Isolation & Accessory Work
+  (114, 'Calf Press on Leg Press', 'Leg Press Calf Raises',
+   'Sit in leg press machine with just balls of feet on platform. Press platform using only calf muscles. Hold squeeze at top and lower for full stretch.',
+   NULL),
+
+  (115, 'Donkey Calf Raises', 'Bent Over Calf Raises',
+   'Bend forward at 90 degrees with partner on back or using machine. Rise onto toes squeezing calves. Provides excellent stretch and contraction.',
+   NULL),
+
+  (116, 'Reverse Curls', 'Overhand Barbell Curls',
+   'Hold barbell with overhand grip, hands shoulder-width apart. Curl bar up keeping elbows at sides. Targets brachialis and forearms more than regular curls.',
+   NULL),
+
+  (117, 'Cable Hammer Curls', 'Rope Hammer Curls',
+   'Use rope attachment on low cable. Curl rope up with neutral grip, squeezing biceps and forearms at top. Lower with control.',
+   NULL),
+
+  (118, 'Zottman Curls', 'Rotating Dumbbell Curls',
+   'Curl dumbbells up with underhand grip. At top, rotate to overhand grip and lower slowly. Rotate back to underhand at bottom. Targets biceps and forearms.',
+   NULL),
+
+  -- Additional Back Variations
+  (119, 'Wide Grip Pull-ups', 'Wide Grip Pullups',
+   'Use wider than normal grip on pull-up bar. Pull up until chin clears bar, focusing on lat engagement. Lower with control.',
+   NULL),
+
+  (120, 'Neutral Grip Pull-ups', 'Parallel Grip Pull-ups',
+   'Use parallel handles for neutral grip. Pull up until chin clears handles. This grip is often easier on shoulders and wrists.',
+   NULL),
+
+  (121, 'Chest Supported Rows', 'Machine Supported Rows',
+   'Use chest supported row machine or incline bench. Pull handles to chest while squeezing shoulder blades. Eliminates lower back involvement.',
+   NULL),
+
+  (122, 'Landmine Rows', 'Single Arm Landmine Rows',
+   'Position barbell in landmine setup. Stand over bar with one foot forward. Pull bar to chest with one arm, squeezing lat and rhomboid.',
+   NULL),
+
+  -- Lower Body Unilateral & Accessories
+  (123, 'Step Downs', 'Negative Step Ups',
+   'Stand on box or bench. Step down with one leg, controlling descent with other leg. Step back up and repeat. Excellent for knee stability.',
+   NULL),
+
+  (124, 'Curtsy Lunges', 'Curtsy Squats',
+   'Step one leg behind and across the other leg. Lower into lunge position. Return to standing and repeat. Targets glutes from different angle.',
+   NULL),
+
+  (125, 'Lateral Lunges', 'Side Lunges',
+   'Step wide to one side, bending that knee while keeping other leg straight. Push off bent leg to return to center. Targets inner thighs and glutes.',
+   NULL),
+
+  (126, 'Single Leg Romanian Deadlift', 'Single Leg RDL',
+   'Stand on one leg holding dumbbell. Hinge at hip while extending free leg behind. Lower weight while maintaining balance. Return to standing.',
+   NULL),
+
+  (127, 'Pistol Squats', 'Single Leg Squats',
+   'Stand on one leg with other leg extended forward. Lower into deep squat on one leg. Return to standing. Very challenging bodyweight movement.',
+   NULL),
+
+  -- Additional Chest Variations
+  (128, 'Cable Chest Press', 'Cable Press',
+   'Stand between cables set at chest height. Press handles forward until arms are extended. Return with control. Provides constant tension throughout range.',
+   NULL),
+
+  (129, 'Svend Press', 'Plate Squeeze Press',
+   'Hold weight plate between palms at chest level. Squeeze plate while pressing it away from chest. Return with control while maintaining squeeze.',
+   NULL),
+
+  (130, 'Pullovers', 'Dumbbell Pullovers',
+   'Lie on bench with dumbbell held above chest. Lower weight behind head in arc motion, feeling stretch in chest and lats. Return to starting position.',
+   NULL),
+
+  -- Core & Stability
+  (131, 'Pallof Press', 'Anti-Rotation Core Exercise',
+   'Stand sideways to cable machine at chest height. Hold handle at chest and press straight out, resisting rotation. Hold and return. Excellent anti-rotation exercise.',
+   NULL),
+
+  (132, 'Suitcase Holds', 'Unilateral Carry Hold',
+   'Hold heavy dumbbell in one hand at side. Stand tall maintaining posture against the uneven load. Challenges core stability and grip strength.',
+   NULL),
+
+  (133, 'Single Arm Farmer Walk', 'Unilateral Farmers Walk',
+   'Hold heavy weight in one hand and walk forward. Maintain upright posture and resist leaning. Switch sides each set.',
+   NULL),
+
+  (134, 'Turkish Get-up Partial', 'Half Turkish Get-up',
+   'Perform first half of Turkish get-up, stopping at seated position. Focus on smooth movement while keeping weight overhead.',
+   NULL),
+
+  (135, 'Hollow Body Hold', 'Hollow Hold',
+   'Lie on back, press lower back to ground. Lift shoulders and legs off ground, holding hollow position. Keep arms extended and breathe normally.',
+   NULL),
+
+  (136, 'V-Ups', 'Jackknife Sit-ups',
+   'Lie on back with arms extended overhead. Simultaneously lift legs and torso, reaching hands toward feet. Lower with control.',
+   NULL),
+
+  (137, 'Dragon Flags', 'Bruce Lee Flags',
+   'Lie on bench gripping behind head. Lift entire body up keeping it straight. Lower slowly with control. Extremely challenging core exercise.',
+   NULL),
+
+  -- Olympic Lifting Accessories
+  (138, 'Romanian Deadlift - Single Leg', 'Single Leg RDL',
+   'Hold barbell or dumbbells. Stand on one leg, hinge at hip while lowering weight. Keep standing leg slightly bent and maintain balance.',
+   NULL),
+
+  (139, 'Sumo Deadlift', 'Wide Stance Deadlift',
+   'Stand with wide stance, toes turned out. Grip bar with hands inside legs. Pull bar up by extending hips and knees simultaneously. Keep chest up.',
+   NULL),
+
+  (140, 'Trap Bar Deadlift', 'Hex Bar Deadlift',
+   'Stand inside trap bar with neutral grip on handles. Deadlift with more upright torso position. Often easier on lower back than conventional deadlift.',
+   NULL),
+
+  -- Additional Functional & Athletic Movements
+  (141, 'Box Jumps', 'Plyometric Box Jumps',
+   'Stand facing box at appropriate height. Jump up landing softly on box with both feet. Step down and repeat. Focus on landing mechanics.',
+   NULL),
+
+  (142, 'Broad Jumps', 'Standing Long Jump',
+   'Stand with feet hip-width apart. Jump forward as far as possible, landing softly. Focus on explosive hip extension and safe landing.',
+   NULL),
+
+  (143, 'Jump Squats', 'Plyometric Squats',
+   'Perform bodyweight squat then explode up into jump. Land softly and immediately go into next squat. Keep movements explosive and controlled.',
+   NULL),
+
+  (144, 'Battle Ropes', 'Training Ropes',
+   'Hold ends of heavy rope with athletic stance. Create waves by alternating arm movements or simultaneous slams. Maintain core engagement throughout.',
+   NULL),
+
+  (145, 'Tire Flips', 'Large Tire Flips',
+   'Squat down to tire with hands underneath. Drive up explosively while pushing tire over. Step forward and repeat. Full body power movement.',
+   NULL),
+
+  (146, 'Sled Push', 'Prowler Push',
+   'Load sled with appropriate weight. Push sled forward with arms extended, driving through legs. Maintain forward lean and quick steps.',
+   NULL),
+
+  (147, 'Sled Pull', 'Rope Sled Pull',
+   'Attach rope to loaded sled. Pull sled toward you hand over hand while walking backward. Keep core engaged and maintain good posture.',
+   NULL),
+
+  -- Machine Variations & Isolation
+  (148, 'Leg Press - Single Leg', 'Unilateral Leg Press',
+   'Use leg press machine with one leg at a time. Focus on full range of motion and control. Excellent for addressing imbalances.',
+   NULL),
+
+  (149, 'Seated Leg Curl', 'Seated Hamstring Curl',
+   'Sit in seated leg curl machine with pads behind calves. Curl heels down toward glutes. Return with control. Different angle than lying version.',
+   NULL),
+
+  (150, 'Standing Leg Curl', 'Single Leg Curl Machine',
+   'Stand holding machine for support, curl one leg at a time. Focus on squeezing hamstring at top of movement.',
+   NULL),
+
+  (151, 'Smith Machine Calf Raises', 'Smith Calf Raises',
+   'Use Smith machine bar across shoulders. Perform calf raises with added stability from machine. Good for heavy loading.',
+   NULL),
+
+  (152, 'Cable Reverse Flyes', 'Cable Rear Delt Flyes',
+   'Set cables at chest height with handles crossed. Pull handles apart while squeezing rear delts. Keep slight elbow bend throughout.',
+   NULL),
+
+  -- Conditioning & Cardio Strength
+  (153, 'Rowing Machine', 'Concept 2 Rowing',
+   'Sit on rowing machine with feet secured. Pull handle to chest while extending legs. Return by extending arms first, then bending knees.',
+   NULL),
+
+  (154, 'Assault Bike', 'Air Bike',
+   'Sit on assault bike and pedal while moving arms. Resistance increases with effort. Excellent for conditioning and full body cardio.',
+   NULL),
+
+  (155, 'Ski Erg', 'Skiing Machine',
+   'Stand at ski erg machine. Pull handles down in skiing motion while engaging core. Return handles with control.',
+   NULL),
+
+  -- Advanced Core
+  (156, 'Windshield Wipers', 'Hanging Windshield Wipers',
+   'Hang from pull-up bar with legs raised to 90 degrees. Rotate legs side to side like windshield wipers. Keep shoulders stable.',
+   NULL),
+
+  (157, 'L-Sits', 'L-Sit Hold',
+   'Support body on parallel bars or dip station. Lift legs until parallel to ground, forming L-shape. Hold position while breathing normally.',
+   NULL),
+
+  (158, 'Russian Twists - Weighted', 'Weighted Russian Twists',
+   'Sit with knees bent holding weight. Lean back and rotate weight side to side, tapping ground. Keep chest up and core engaged.',
+   NULL),
+
+  -- Grip & Forearm Specific
+  (159, 'Plate Pinches', 'Weight Plate Pinches',
+   'Hold weight plates between thumb and fingers. Hold for time or walk with plates. Excellent for grip strength development.',
+   NULL),
+
+  (160, 'Dead Hangs', 'Hanging Hold',
+   'Hang from pull-up bar with overhand grip. Hold for time while maintaining shoulder stability. Builds grip strength and shoulder health.',
+   NULL),
+
+  -- Flexibility & Mobility Integration
+  (161, 'Dynamic Warm-up Squats', 'Bodyweight Movement Prep',
+   'Perform bodyweight squats with focus on full range of motion and movement quality. Part of warm-up routine.',
+   NULL),
+
+  (162, 'Leg Swings', 'Dynamic Leg Swings',
+   'Hold support and swing leg forward and back, then side to side. Loosens hips and prepares for training. Keep movements controlled.',
+   NULL),
+
+  (163, 'Arm Circles', 'Shoulder Circles',
+   'Extend arms to sides and make circular motions. Start small and increase size. Reverse direction. Warms up shoulders before training.',
+   NULL),
+
+  -- Advanced Variations
+  (164, 'Deficit Deadlifts', 'Elevated Deadlifts',
+   'Stand on platform or plates to increase range of motion. Perform deadlift with greater depth. Increases flexibility and strength demands.',
+   NULL),
+
+  (165, 'Pause Bench Press', 'Competition Bench Press',
+   'Perform bench press with 1-2 second pause on chest. Eliminates bounce and increases strength off chest. Used in powerlifting.',
+   NULL),
+
+  (166, 'Tempo Squats', 'Slow Eccentric Squats',
+   'Perform squats with controlled tempo, usually 3-4 seconds down, pause, then up. Increases time under tension.',
+   NULL),
+
+  (167, 'Pin Squats', 'Anderson Squats',
+   'Set safety pins at desired depth in squat rack. Start squat from bottom position on pins. Builds strength out of bottom position.',
+   NULL),
+
+  (168, 'Floor Press', 'Barbell Floor Press',
+   'Lie on floor with barbell at chest level. Press bar up until arms are extended. Floor limits range of motion, focusing on lockout strength.',
+   NULL),
+
+  -- Specialty Equipment
+  (169, 'GHD Sit-ups', 'Glute Ham Developer Sit-ups',
+   'Sit in GHD machine with feet secured. Lower back while keeping legs straight. Return to sitting position using abs and hip flexors.',
+   NULL),
+
+  (170, 'GHD Back Extensions', 'Glute Ham Developer Extensions',
+   'Position in GHD with hips at pad. Lower torso while keeping legs straight. Raise back up using glutes and hamstrings.',
+   NULL),
+
+  (171, 'Reverse Hypers', 'Reverse Hyperextensions',
+   'Lie face down on reverse hyper machine. Swing legs up behind you while squeezing glutes. Lower with control.',
+   NULL),
+
+  -- Additional Stretching & Recovery
+  (172, 'Couch Stretch', 'Hip Flexor Stretch',
+   'Place rear foot on couch or bench, front foot on ground in lunge position. Push hips forward to stretch hip flexors. Hold and breathe deeply.',
+   NULL),
+
+  (173, 'Seated Forward Fold', 'Hamstring Stretch',
+   'Sit with legs extended. Fold forward reaching toward toes. Keep spine long and breathe deeply. Stretches hamstrings and lower back.',
+   NULL),
+
+  (174, 'Doorway Chest Stretch', 'Pec Stretch',
+   'Place forearm against doorway with elbow at 90 degrees. Step forward to stretch chest and front shoulder. Hold and repeat other side.',
+   NULL),
+
+  (175, 'Thread the Needle', 'Thoracic Spine Mobility',
+   'Start on hands and knees. Thread one arm under body and through to other side. Return and reach same arm toward ceiling. Mobilizes thoracic spine.',
+   NULL);
+
+  -- Specialty & Sport-Specific
+  INSERT INTO Exercise(id, name, aliases, description, video_link) VALUES
+  (176, 'Medicine Ball Slams', 'Med Ball Slams',
+   'Hold medicine ball overhead with feet shoulder-width apart. Slam ball down with full force using core and arms. Pick up and repeat. Explosive full body movement.',
+   NULL),
+
+  (177, 'Medicine Ball Throws', 'Chest Pass Throws',
+   'Hold medicine ball at chest. Explosively throw ball forward to partner or wall. Catch and repeat. Develops power and coordination.',
+   NULL),
+
+  (178, 'Sledgehammer Swings', 'Tire Hits',
+   'Hold sledgehammer and swing down to hit tire. Use full body rotation and core engagement. Alternate overhead and diagonal swings.',
+   NULL),
+
+  (179, 'Atlas Stone Lifts', 'Stone Loading',
+   'Squat down to atlas stone, wrap arms around it. Lift stone to chest then load onto platform. Extremely challenging full body exercise.',
+   NULL),
+
+  (180, 'Yoke Walk', 'Yoke Carry',
+   'Position under loaded yoke bar across shoulders. Stand and walk forward with heavy load. Maintain upright posture and quick steps.',
+   NULL);
+
 -- Exercise-Muscle Group relationships with explicit exercise IDs
 -- Barbell Bench Press (ID: 1)
 INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
@@ -882,6 +1371,874 @@ INSERT INTO ExerciseMuscleGroup VALUES
 (64, 11, 'primary'), -- Triceps
 (64, 5, 'primary'), -- Upper Body
 (64, 1, 'primary'); -- Push
+
+-- Exercise-Muscle Group relationships for exercises 65-180
+
+-- Leg Press (ID: 65)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(65, 16, 'primary'),   -- Quadriceps
+(65, 18, 'primary'),   -- Glutes
+(65, 17, 'secondary'), -- Hamstrings
+(65, 3, 'primary'),    -- Legs
+(65, 6, 'primary');    -- Lower Body
+
+-- Leg Press - Quad Focus (ID: 66)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(66, 16, 'primary'),   -- Quadriceps
+(66, 18, 'secondary'), -- Glutes
+(66, 3, 'primary'),    -- Legs
+(66, 6, 'primary');    -- Lower Body
+
+-- Leg Press - Hamstring Focus (ID: 67)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(67, 17, 'primary'),   -- Hamstrings
+(67, 18, 'primary'),   -- Glutes
+(67, 16, 'secondary'), -- Quadriceps
+(67, 3, 'primary'),    -- Legs
+(67, 6, 'primary');    -- Lower Body
+
+-- Leg Extension (ID: 68)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(68, 16, 'primary'),   -- Quadriceps
+(68, 3, 'primary'),    -- Legs
+(68, 6, 'primary');    -- Lower Body
+
+-- Leg Curl (ID: 69)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(69, 17, 'primary'),   -- Hamstrings
+(69, 3, 'primary'),    -- Legs
+(69, 6, 'primary');    -- Lower Body
+
+-- Standing Calf Raises - Machine (ID: 70)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(70, 19, 'primary'),   -- Calves
+(70, 3, 'primary'),    -- Legs
+(70, 6, 'primary');    -- Lower Body
+
+-- Seated Calf Raises (ID: 71)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(71, 19, 'primary'),   -- Calves
+(71, 3, 'primary'),    -- Legs
+(71, 6, 'primary');    -- Lower Body
+
+-- Hack Squat (ID: 72)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(72, 16, 'primary'),   -- Quadriceps
+(72, 18, 'primary'),   -- Glutes
+(72, 17, 'secondary'), -- Hamstrings
+(72, 3, 'primary'),    -- Legs
+(72, 6, 'primary');    -- Lower Body
+
+-- Smith Machine Squats (ID: 73)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(73, 16, 'primary'),   -- Quadriceps
+(73, 18, 'primary'),   -- Glutes
+(73, 17, 'secondary'), -- Hamstrings
+(73, 3, 'primary'),    -- Legs
+(73, 6, 'primary');    -- Lower Body
+
+-- Good Mornings (ID: 74)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(74, 17, 'primary'),   -- Hamstrings
+(74, 18, 'primary'),   -- Glutes
+(74, 12, 'secondary'), -- Back
+(74, 2, 'primary'),    -- Pull
+(74, 6, 'primary');    -- Lower Body
+
+-- T-Bar Rows (ID: 75)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(75, 12, 'primary'),   -- Back
+(75, 13, 'secondary'), -- Biceps
+(75, 14, 'secondary'), -- Rear Delts
+(75, 2, 'primary'),    -- Pull
+(75, 5, 'primary');    -- Upper Body
+
+-- Cable Low Rows (ID: 76)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(76, 12, 'primary'),   -- Back
+(76, 13, 'secondary'), -- Biceps
+(76, 14, 'secondary'), -- Rear Delts
+(76, 2, 'primary'),    -- Pull
+(76, 5, 'primary');    -- Upper Body
+
+-- Machine Rows (ID: 77)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(77, 12, 'primary'),   -- Back
+(77, 13, 'secondary'), -- Biceps
+(77, 14, 'secondary'), -- Rear Delts
+(77, 2, 'primary'),    -- Pull
+(77, 5, 'primary');    -- Upper Body
+
+-- Inverted Rows (ID: 78)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(78, 12, 'primary'),   -- Back
+(78, 13, 'secondary'), -- Biceps
+(78, 14, 'secondary'), -- Rear Delts
+(78, 2, 'primary'),    -- Pull
+(78, 5, 'primary');    -- Upper Body
+
+-- Hyperextensions (ID: 79)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(79, 17, 'primary'),   -- Hamstrings
+(79, 18, 'primary'),   -- Glutes
+(79, 12, 'secondary'), -- Back
+(79, 2, 'primary'),    -- Pull
+(79, 6, 'primary');    -- Lower Body
+
+-- Reverse Hyperextensions (ID: 80)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(80, 18, 'primary'),   -- Glutes
+(80, 17, 'primary'),   -- Hamstrings
+(80, 12, 'secondary'), -- Back
+(80, 2, 'primary'),    -- Pull
+(80, 6, 'primary');    -- Lower Body
+
+-- Wide Grip Lat Pulldowns (ID: 81)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(81, 12, 'primary'),   -- Back
+(81, 13, 'secondary'), -- Biceps
+(81, 2, 'primary'),    -- Pull
+(81, 5, 'primary');    -- Upper Body
+
+-- Close Grip Lat Pulldowns (ID: 82)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(82, 12, 'primary'),   -- Back
+(82, 13, 'secondary'), -- Biceps
+(82, 2, 'primary'),    -- Pull
+(82, 5, 'primary');    -- Upper Body
+
+-- Decline Barbell Bench Press (ID: 83)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(83, 9, 'primary'),    -- Chest
+(83, 11, 'secondary'), -- Triceps
+(83, 10, 'secondary'), -- Shoulders
+(83, 1, 'primary'),    -- Push
+(83, 5, 'primary');    -- Upper Body
+
+-- Incline Dumbbell Flyes (ID: 84)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(84, 9, 'primary'),    -- Chest
+(84, 10, 'secondary'), -- Shoulders
+(84, 1, 'primary'),    -- Push
+(84, 5, 'primary');    -- Upper Body
+
+-- Decline Dumbbell Flyes (ID: 85)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(85, 9, 'primary'),    -- Chest
+(85, 10, 'secondary'), -- Shoulders
+(85, 1, 'primary'),    -- Push
+(85, 5, 'primary');    -- Upper Body
+
+-- Cable Chest Flyes (ID: 86)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(86, 9, 'primary'),    -- Chest
+(86, 10, 'secondary'), -- Shoulders
+(86, 1, 'primary'),    -- Push
+(86, 5, 'primary');    -- Upper Body
+
+-- Dips (ID: 87)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(87, 9, 'primary'),    -- Chest
+(87, 11, 'primary'),   -- Triceps
+(87, 10, 'secondary'), -- Shoulders
+(87, 1, 'primary'),    -- Push
+(87, 5, 'primary');    -- Upper Body
+
+-- Chest Press Machine (ID: 88)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(88, 9, 'primary'),    -- Chest
+(88, 11, 'secondary'), -- Triceps
+(88, 10, 'secondary'), -- Shoulders
+(88, 1, 'primary'),    -- Push
+(88, 5, 'primary');    -- Upper Body
+
+-- Front Raises (ID: 89)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(89, 10, 'primary'),   -- Shoulders
+(89, 1, 'primary'),    -- Push
+(89, 5, 'primary');    -- Upper Body
+
+-- Upright Rows (ID: 90)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(90, 10, 'primary'),   -- Shoulders
+(90, 12, 'secondary'), -- Back
+(90, 2, 'primary'),    -- Pull
+(90, 5, 'primary');    -- Upper Body
+
+-- Shrugs (ID: 91)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(91, 12, 'primary'),   -- Back (traps)
+(91, 2, 'primary'),    -- Pull
+(91, 5, 'primary');    -- Upper Body
+
+-- Cable Lateral Raises (ID: 92)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(92, 10, 'primary'),   -- Shoulders
+(92, 1, 'primary'),    -- Push
+(92, 5, 'primary');    -- Upper Body
+
+-- Bent Over Lateral Raises (ID: 93)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(93, 14, 'primary'),   -- Rear Delts
+(93, 12, 'secondary'), -- Back
+(93, 2, 'primary'),    -- Pull
+(93, 5, 'primary');    -- Upper Body
+
+-- Preacher Curls (ID: 94)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(94, 13, 'primary'),   -- Biceps
+(94, 15, 'secondary'), -- Forearms
+(94, 2, 'primary'),    -- Pull
+(94, 7, 'primary'),    -- Arms
+(94, 5, 'primary');    -- Upper Body
+
+-- Cable Bicep Curls (ID: 95)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(95, 13, 'primary'),   -- Biceps
+(95, 15, 'secondary'), -- Forearms
+(95, 2, 'primary'),    -- Pull
+(95, 7, 'primary'),    -- Arms
+(95, 5, 'primary');    -- Upper Body
+
+-- Concentration Curls (ID: 96)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(96, 13, 'primary'),   -- Biceps
+(96, 15, 'secondary'), -- Forearms
+(96, 2, 'primary'),    -- Pull
+(96, 7, 'primary'),    -- Arms
+(96, 5, 'primary');    -- Upper Body
+
+-- Cable Tricep Overhead Extension (ID: 97)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(97, 11, 'primary'),   -- Triceps
+(97, 1, 'primary'),    -- Push
+(97, 7, 'primary'),    -- Arms
+(97, 5, 'primary');    -- Upper Body
+
+-- Skull Crushers (ID: 98)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(98, 11, 'primary'),   -- Triceps
+(98, 1, 'primary'),    -- Push
+(98, 7, 'primary'),    -- Arms
+(98, 5, 'primary');    -- Upper Body
+
+-- Kickbacks (ID: 99)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(99, 11, 'primary'),   -- Triceps
+(99, 1, 'primary'),    -- Push
+(99, 7, 'primary'),    -- Arms
+(99, 5, 'primary');    -- Upper Body
+
+-- Wrist Curls (ID: 100)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(100, 15, 'primary'),  -- Forearms
+(100, 7, 'primary'),   -- Arms
+(100, 5, 'primary');   -- Upper Body
+
+-- Lat Pulldown - Reverse Grip (ID: 101)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(101, 12, 'primary'),  -- Back
+(101, 13, 'primary'),  -- Biceps
+(101, 2, 'primary'),   -- Pull
+(101, 5, 'primary');   -- Upper Body
+
+-- Cable Crossovers (ID: 102)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(102, 9, 'primary'),   -- Chest
+(102, 10, 'secondary'), -- Shoulders
+(102, 1, 'primary'),   -- Push
+(102, 5, 'primary');   -- Upper Body
+
+-- Pec Deck (ID: 103)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(103, 9, 'primary'),   -- Chest
+(103, 10, 'secondary'), -- Shoulders
+(103, 1, 'primary'),   -- Push
+(103, 5, 'primary');   -- Upper Body
+
+-- Machine Shoulder Press (ID: 104)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(104, 10, 'primary'),  -- Shoulders
+(104, 11, 'secondary'), -- Triceps
+(104, 1, 'primary'),   -- Push
+(104, 5, 'primary');   -- Upper Body
+
+-- Cable Shrugs (ID: 105)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(105, 12, 'primary'),  -- Back (traps)
+(105, 2, 'primary'),   -- Pull
+(105, 5, 'primary');   -- Upper Body
+
+-- Power Clean (ID: 106)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(106, 4, 'primary'),   -- Full Body
+(106, 12, 'primary'),  -- Back
+(106, 18, 'primary'),  -- Glutes
+(106, 17, 'primary'),  -- Hamstrings
+(106, 16, 'secondary'), -- Quadriceps
+(106, 10, 'secondary'), -- Shoulders
+(106, 2, 'primary');   -- Pull
+
+-- Hang Clean (ID: 107)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(107, 4, 'primary'),   -- Full Body
+(107, 12, 'primary'),  -- Back
+(107, 18, 'primary'),  -- Glutes
+(107, 17, 'primary'),  -- Hamstrings
+(107, 10, 'secondary'), -- Shoulders
+(107, 2, 'primary');   -- Pull
+
+-- Push Press (ID: 108)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(108, 10, 'primary'),  -- Shoulders
+(108, 11, 'secondary'), -- Triceps
+(108, 16, 'secondary'), -- Quadriceps
+(108, 18, 'secondary'), -- Glutes
+(108, 1, 'primary'),   -- Push
+(108, 4, 'primary');   -- Full Body
+
+-- Farmer Walks (ID: 109)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(109, 4, 'primary'),   -- Full Body
+(109, 15, 'primary'),  -- Forearms
+(109, 12, 'secondary'), -- Back
+(109, 8, 'secondary'), -- Core
+(109, 3, 'secondary'); -- Legs
+
+-- Suitcase Carry (ID: 110)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(110, 8, 'primary'),   -- Core
+(110, 15, 'primary'),  -- Forearms
+(110, 12, 'secondary'), -- Back
+(110, 4, 'primary');   -- Full Body
+
+-- Bear Crawl (ID: 111)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(111, 4, 'primary'),   -- Full Body
+(111, 8, 'primary'),   -- Core
+(111, 10, 'secondary'), -- Shoulders
+(111, 3, 'secondary'); -- Legs
+
+-- Kettlebell Swings (ID: 112)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(112, 18, 'primary'),  -- Glutes
+(112, 17, 'primary'),  -- Hamstrings
+(112, 8, 'secondary'), -- Core
+(112, 10, 'secondary'), -- Shoulders
+(112, 4, 'primary'),   -- Full Body
+(112, 2, 'primary');   -- Pull
+
+-- Single Arm Kettlebell Swings (ID: 113)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(113, 18, 'primary'),  -- Glutes
+(113, 17, 'primary'),  -- Hamstrings
+(113, 8, 'primary'),   -- Core
+(113, 10, 'secondary'), -- Shoulders
+(113, 4, 'primary'),   -- Full Body
+(113, 2, 'primary');   -- Pull
+
+-- Calf Press on Leg Press (ID: 114)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(114, 19, 'primary'),  -- Calves
+(114, 3, 'primary'),   -- Legs
+(114, 6, 'primary');   -- Lower Body
+
+-- Donkey Calf Raises (ID: 115)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(115, 19, 'primary'),  -- Calves
+(115, 3, 'primary'),   -- Legs
+(115, 6, 'primary');   -- Lower Body
+
+-- Reverse Curls (ID: 116)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(116, 13, 'primary'),  -- Biceps
+(116, 15, 'primary'),  -- Forearms
+(116, 2, 'primary'),   -- Pull
+(116, 7, 'primary'),   -- Arms
+(116, 5, 'primary');   -- Upper Body
+
+-- Cable Hammer Curls (ID: 117)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(117, 13, 'primary'),  -- Biceps
+(117, 15, 'primary'),  -- Forearms
+(117, 2, 'primary'),   -- Pull
+(117, 7, 'primary'),   -- Arms
+(117, 5, 'primary');   -- Upper Body
+
+-- Zottman Curls (ID: 118)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(118, 13, 'primary'),  -- Biceps
+(118, 15, 'primary'),  -- Forearms
+(118, 2, 'primary'),   -- Pull
+(118, 7, 'primary'),   -- Arms
+(118, 5, 'primary');   -- Upper Body
+
+-- Wide Grip Pull-ups (ID: 119)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(119, 12, 'primary'),  -- Back
+(119, 13, 'secondary'), -- Biceps
+(119, 2, 'primary'),   -- Pull
+(119, 5, 'primary');   -- Upper Body
+
+-- Neutral Grip Pull-ups (ID: 120)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(120, 12, 'primary'),  -- Back
+(120, 13, 'secondary'), -- Biceps
+(120, 2, 'primary'),   -- Pull
+(120, 5, 'primary');   -- Upper Body
+
+-- Chest Supported Rows (ID: 121)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(121, 12, 'primary'),  -- Back
+(121, 13, 'secondary'), -- Biceps
+(121, 14, 'secondary'), -- Rear Delts
+(121, 2, 'primary'),   -- Pull
+(121, 5, 'primary');   -- Upper Body
+
+-- Landmine Rows (ID: 122)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(122, 12, 'primary'),  -- Back
+(122, 13, 'secondary'), -- Biceps
+(122, 8, 'secondary'), -- Core
+(122, 2, 'primary'),   -- Pull
+(122, 5, 'primary');   -- Upper Body
+
+-- Step Downs (ID: 123)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(123, 16, 'primary'),  -- Quadriceps
+(123, 18, 'secondary'), -- Glutes
+(123, 3, 'primary'),   -- Legs
+(123, 6, 'primary');   -- Lower Body
+
+-- Curtsy Lunges (ID: 124)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(124, 18, 'primary'),  -- Glutes
+(124, 16, 'primary'),  -- Quadriceps
+(124, 17, 'secondary'), -- Hamstrings
+(124, 3, 'primary'),   -- Legs
+(124, 6, 'primary');   -- Lower Body
+
+-- Lateral Lunges (ID: 125)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(125, 18, 'primary'),  -- Glutes
+(125, 16, 'primary'),  -- Quadriceps
+(125, 17, 'secondary'), -- Hamstrings
+(125, 3, 'primary'),   -- Legs
+(125, 6, 'primary');   -- Lower Body
+
+-- Single Leg Romanian Deadlift (ID: 126)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(126, 17, 'primary'),  -- Hamstrings
+(126, 18, 'primary'),  -- Glutes
+(126, 8, 'secondary'), -- Core
+(126, 2, 'primary'),   -- Pull
+(126, 6, 'primary');   -- Lower Body
+
+-- Pistol Squats (ID: 127)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(127, 16, 'primary'),  -- Quadriceps
+(127, 18, 'primary'),  -- Glutes
+(127, 8, 'secondary'), -- Core
+(127, 3, 'primary'),   -- Legs
+(127, 6, 'primary');   -- Lower Body
+
+-- Cable Chest Press (ID: 128)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(128, 9, 'primary'),   -- Chest
+(128, 11, 'secondary'), -- Triceps
+(128, 10, 'secondary'), -- Shoulders
+(128, 1, 'primary'),   -- Push
+(128, 5, 'primary');   -- Upper Body
+
+-- Svend Press (ID: 129)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(129, 9, 'primary'),   -- Chest
+(129, 10, 'secondary'), -- Shoulders
+(129, 11, 'secondary'), -- Triceps
+(129, 1, 'primary'),   -- Push
+(129, 5, 'primary');   -- Upper Body
+
+-- Pullovers (ID: 130)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(130, 9, 'primary'),   -- Chest
+(130, 12, 'primary'),  -- Back (lats)
+(130, 10, 'secondary'), -- Shoulders
+(130, 1, 'primary'),   -- Push
+(130, 2, 'primary'),   -- Pull
+(130, 5, 'primary');   -- Upper Body
+
+-- Pallof Press (ID: 131)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(131, 8, 'primary'),   -- Core
+(131, 20, 'primary'),  -- Abs
+(131, 21, 'primary');  -- Obliques
+
+-- Suitcase Holds (ID: 132)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(132, 8, 'primary'),   -- Core
+(132, 15, 'primary'),  -- Forearms
+(132, 12, 'secondary'), -- Back
+(132, 4, 'primary');   -- Full Body
+
+-- Single Arm Farmer Walk (ID: 133)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(133, 8, 'primary'),   -- Core
+(133, 15, 'primary'),  -- Forearms
+(133, 12, 'secondary'), -- Back
+(133, 3, 'secondary'), -- Legs
+(133, 4, 'primary');   -- Full Body
+
+-- Turkish Get-up Partial (ID: 134)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(134, 4, 'primary'),   -- Full Body
+(134, 8, 'primary'),   -- Core
+(134, 10, 'secondary'), -- Shoulders
+(134, 3, 'secondary'); -- Legs
+
+-- Hollow Body Hold (ID: 135)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(135, 8, 'primary'),   -- Core
+(135, 20, 'primary');  -- Abs
+
+-- V-Ups (ID: 136)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(136, 8, 'primary'),   -- Core
+(136, 20, 'primary'),  -- Abs
+(136, 21, 'secondary'); -- Obliques
+
+-- Dragon Flags (ID: 137)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(137, 8, 'primary'),   -- Core
+(137, 20, 'primary'),  -- Abs
+(137, 12, 'secondary'); -- Back
+
+-- Romanian Deadlift - Single Leg (ID: 138)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(138, 17, 'primary'),  -- Hamstrings
+(138, 18, 'primary'),  -- Glutes
+(138, 8, 'secondary'), -- Core
+(138, 2, 'primary'),   -- Pull
+(138, 6, 'primary');   -- Lower Body
+
+-- Sumo Deadlift (ID: 139)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(139, 18, 'primary'),  -- Glutes
+(139, 17, 'primary'),  -- Hamstrings
+(139, 16, 'secondary'), -- Quadriceps
+(139, 12, 'secondary'), -- Back
+(139, 2, 'primary'),   -- Pull
+(139, 6, 'primary');   -- Lower Body
+
+-- Trap Bar Deadlift (ID: 140)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(140, 18, 'primary'),  -- Glutes
+(140, 17, 'primary'),  -- Hamstrings
+(140, 16, 'primary'),  -- Quadriceps
+(140, 12, 'secondary'), -- Back
+(140, 2, 'primary'),   -- Pull
+(140, 6, 'primary');   -- Lower Body
+
+-- Box Jumps (ID: 141)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(141, 16, 'primary'),  -- Quadriceps
+(141, 18, 'primary'),  -- Glutes
+(141, 19, 'secondary'), -- Calves
+(141, 3, 'primary'),   -- Legs
+(141, 6, 'primary');   -- Lower Body
+
+-- Broad Jumps (ID: 142)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(142, 16, 'primary'),  -- Quadriceps
+(142, 18, 'primary'),  -- Glutes
+(142, 17, 'secondary'), -- Hamstrings
+(142, 19, 'secondary'), -- Calves
+(142, 3, 'primary'),   -- Legs
+(142, 6, 'primary');   -- Lower Body
+
+-- Jump Squats (ID: 143)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(143, 16, 'primary'),  -- Quadriceps
+(143, 18, 'primary'),  -- Glutes
+(143, 19, 'secondary'), -- Calves
+(143, 3, 'primary'),   -- Legs
+(143, 6, 'primary');   -- Lower Body
+
+-- Battle Ropes (ID: 144)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(144, 4, 'primary'),   -- Full Body
+(144, 8, 'primary'),   -- Core
+(144, 10, 'primary'),  -- Shoulders
+(144, 7, 'secondary'), -- Arms
+(144, 3, 'secondary'); -- Legs
+
+-- Tire Flips (ID: 145)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(145, 4, 'primary'),   -- Full Body
+(145, 18, 'primary'),  -- Glutes
+(145, 17, 'primary'),  -- Hamstrings
+(145, 16, 'secondary'), -- Quadriceps
+(145, 12, 'secondary'), -- Back
+(145, 2, 'primary');   -- Pull
+
+-- Sled Push (ID: 146)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(146, 16, 'primary'),  -- Quadriceps
+(146, 18, 'primary'),  -- Glutes
+(146, 19, 'secondary'), -- Calves
+(146, 8, 'secondary'), -- Core
+(146, 1, 'primary'),   -- Push
+(146, 6, 'primary');   -- Lower Body
+
+-- Sled Pull (ID: 147)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(147, 12, 'primary'),  -- Back
+(147, 13, 'secondary'), -- Biceps
+(147, 3, 'secondary'), -- Legs
+(147, 8, 'secondary'), -- Core
+(147, 2, 'primary'),   -- Pull
+(147, 4, 'primary');   -- Full Body
+
+-- Leg Press - Single Leg (ID: 148)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(148, 16, 'primary'),  -- Quadriceps
+(148, 18, 'primary'),  -- Glutes
+(148, 17, 'secondary'), -- Hamstrings
+(148, 8, 'secondary'), -- Core
+(148, 3, 'primary'),   -- Legs
+(148, 6, 'primary');   -- Lower Body
+
+-- Seated Leg Curl (ID: 149)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(149, 17, 'primary'),  -- Hamstrings
+(149, 3, 'primary'),   -- Legs
+(149, 6, 'primary');   -- Lower Body
+
+-- Standing Leg Curl (ID: 150)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(150, 17, 'primary'),  -- Hamstrings
+(150, 8, 'secondary'), -- Core
+(150, 3, 'primary'),   -- Legs
+(150, 6, 'primary');   -- Lower Body
+
+-- Smith Machine Calf Raises (ID: 151)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(151, 19, 'primary'),  -- Calves
+(151, 3, 'primary'),   -- Legs
+(151, 6, 'primary');   -- Lower Body
+
+-- Cable Reverse Flyes (ID: 152)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(152, 14, 'primary'),  -- Rear Delts
+(152, 12, 'secondary'), -- Back
+(152, 2, 'primary'),   -- Pull
+(152, 5, 'primary');   -- Upper Body
+
+-- Rowing Machine (ID: 153)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(153, 4, 'primary'),   -- Full Body
+(153, 12, 'primary'),  -- Back
+(153, 3, 'primary'),   -- Legs
+(153, 13, 'secondary'), -- Biceps
+(153, 2, 'primary');   -- Pull
+
+-- Assault Bike (ID: 154)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(154, 4, 'primary'),   -- Full Body
+(154, 3, 'primary'),   -- Legs
+(154, 5, 'secondary'), -- Upper Body
+(154, 8, 'secondary'); -- Core
+
+-- Ski Erg (ID: 155)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(155, 4, 'primary'),   -- Full Body
+(155, 12, 'primary'),  -- Back
+(155, 8, 'primary'),   -- Core
+(155, 7, 'secondary'), -- Arms
+(155, 2, 'primary');   -- Pull
+
+-- Windshield Wipers (ID: 156)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(156, 8, 'primary'),   -- Core
+(156, 21, 'primary'),  -- Obliques
+(156, 20, 'secondary'), -- Abs
+(156, 15, 'secondary'); -- Forearms
+
+-- L-Sits (ID: 157)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(157, 8, 'primary'),   -- Core
+(157, 20, 'primary'),  -- Abs
+(157, 10, 'secondary'), -- Shoulders
+(157, 15, 'secondary'); -- Forearms
+
+-- Russian Twists - Weighted (ID: 158)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(158, 8, 'primary'),   -- Core
+(158, 21, 'primary'),  -- Obliques
+(158, 20, 'secondary'); -- Abs
+
+-- Plate Pinches (ID: 159)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(159, 15, 'primary'),  -- Forearms
+(159, 7, 'primary'),   -- Arms
+(159, 5, 'primary');   -- Upper Body
+
+-- Dead Hangs (ID: 160)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(160, 15, 'primary'),  -- Forearms
+(160, 12, 'secondary'), -- Back
+(160, 10, 'secondary'), -- Shoulders
+(160, 2, 'primary'),   -- Pull
+(160, 5, 'primary');   -- Upper Body
+
+-- Dynamic Warm-up Squats (ID: 161)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(161, 16, 'primary'),  -- Quadriceps
+(161, 18, 'primary'),  -- Glutes
+(161, 17, 'secondary'), -- Hamstrings
+(161, 3, 'primary'),   -- Legs
+(161, 6, 'primary');   -- Lower Body
+
+-- Leg Swings (ID: 162)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(162, 3, 'primary'),   -- Legs
+(162, 8, 'secondary'), -- Core
+(162, 6, 'primary');   -- Lower Body
+
+-- Arm Circles (ID: 163)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(163, 10, 'primary'),  -- Shoulders
+(163, 5, 'primary');   -- Upper Body
+
+-- Deficit Deadlifts (ID: 164)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(164, 18, 'primary'),  -- Glutes
+(164, 17, 'primary'),  -- Hamstrings
+(164, 16, 'secondary'), -- Quadriceps
+(164, 12, 'secondary'), -- Back
+(164, 2, 'primary'),   -- Pull
+(164, 6, 'primary');   -- Lower Body
+
+-- Pause Bench Press (ID: 165)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(165, 9, 'primary'),   -- Chest
+(165, 11, 'secondary'), -- Triceps
+(165, 10, 'secondary'), -- Shoulders
+(165, 1, 'primary'),   -- Push
+(165, 5, 'primary');   -- Upper Body
+
+-- Tempo Squats (ID: 166)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(166, 16, 'primary'),  -- Quadriceps
+(166, 18, 'primary'),  -- Glutes
+(166, 17, 'secondary'), -- Hamstrings
+(166, 8, 'secondary'), -- Core
+(166, 3, 'primary'),   -- Legs
+(166, 6, 'primary');   -- Lower Body
+
+-- Pin Squats (ID: 167)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(167, 16, 'primary'),  -- Quadriceps
+(167, 18, 'primary'),  -- Glutes
+(167, 17, 'secondary'), -- Hamstrings
+(167, 3, 'primary'),   -- Legs
+(167, 6, 'primary');   -- Lower Body
+
+-- Floor Press (ID: 168)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(168, 9, 'primary'),   -- Chest
+(168, 11, 'primary'),  -- Triceps
+(168, 10, 'secondary'), -- Shoulders
+(168, 1, 'primary'),   -- Push
+(168, 5, 'primary');   -- Upper Body
+
+-- GHD Sit-ups (ID: 169)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(169, 8, 'primary'),   -- Core
+(169, 20, 'primary'),  -- Abs
+(169, 17, 'secondary'); -- Hamstrings
+
+-- GHD Back Extensions (ID: 170)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(170, 18, 'primary'),  -- Glutes
+(170, 17, 'primary'),  -- Hamstrings
+(170, 12, 'secondary'), -- Back
+(170, 2, 'primary'),   -- Pull
+(170, 6, 'primary');   -- Lower Body
+
+-- Reverse Hypers (ID: 171)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(171, 18, 'primary'),  -- Glutes
+(171, 17, 'primary'),  -- Hamstrings
+(171, 12, 'secondary'), -- Back
+(171, 2, 'primary'),   -- Pull
+(171, 6, 'primary');   -- Lower Body
+
+-- Couch Stretch (ID: 172)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(172, 3, 'primary'),   -- Legs
+(172, 6, 'primary');   -- Lower Body
+
+-- Seated Forward Fold (ID: 173)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(173, 17, 'primary'),  -- Hamstrings
+(173, 12, 'secondary'), -- Back
+(173, 6, 'primary');   -- Lower Body
+
+-- Doorway Chest Stretch (ID: 174)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(174, 9, 'primary'),   -- Chest
+(174, 10, 'secondary'), -- Shoulders
+(174, 5, 'primary');   -- Upper Body
+
+-- Thread the Needle (ID: 175)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(175, 12, 'primary'),  -- Back
+(175, 10, 'secondary'), -- Shoulders
+(175, 8, 'secondary'), -- Core
+(175, 5, 'primary');   -- Upper Body
+
+-- Medicine Ball Slams (ID: 176)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(176, 4, 'primary'),   -- Full Body
+(176, 8, 'primary'),   -- Core
+(176, 10, 'primary'),  -- Shoulders
+(176, 7, 'secondary'), -- Arms
+(176, 3, 'secondary'); -- Legs
+
+-- Medicine Ball Throws (ID: 177)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(177, 9, 'primary'),   -- Chest
+(177, 10, 'primary'),  -- Shoulders
+(177, 11, 'secondary'), -- Triceps
+(177, 8, 'secondary'), -- Core
+(177, 1, 'primary'),   -- Push
+(177, 5, 'primary');   -- Upper Body
+
+-- Sledgehammer Swings (ID: 178)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(178, 4, 'primary'),   -- Full Body
+(178, 8, 'primary'),   -- Core
+(178, 10, 'primary'),  -- Shoulders
+(178, 12, 'secondary'), -- Back
+(178, 7, 'secondary'); -- Arms
+
+-- Atlas Stone Lifts (ID: 179)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(179, 4, 'primary'),   -- Full Body
+(179, 18, 'primary'),  -- Glutes
+(179, 17, 'primary'),  -- Hamstrings
+(179, 12, 'primary'),  -- Back
+(179, 16, 'secondary'), -- Quadriceps
+(179, 8, 'secondary'), -- Core
+(179, 2, 'primary');   -- Pull
+
+-- Yoke Walk (ID: 180)
+INSERT INTO ExerciseMuscleGroup(exercise_id, muscle_group_id, involvement_type) VALUES
+(180, 4, 'primary'),   -- Full Body
+(180, 12, 'primary'),  -- Back
+(180, 8, 'primary'),   -- Core
+(180, 3, 'secondary'), -- Legs
+(180, 15, 'secondary'); -- Forearms
 
 -- Basic queries
 selectAllMuscleGroups:
