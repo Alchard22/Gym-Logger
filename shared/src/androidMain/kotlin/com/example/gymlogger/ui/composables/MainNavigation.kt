@@ -51,7 +51,8 @@ fun MainNavigation(
                 },
                 onNavigateBack = {
                     navController.popBackStack()
-                }
+                },
+                navController
             )
         }
 

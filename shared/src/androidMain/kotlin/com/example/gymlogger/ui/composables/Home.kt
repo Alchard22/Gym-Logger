@@ -21,15 +21,12 @@ fun HomeScreen(repository: GymRepository, navController: NavController) {
         item {
             ViewTrainingPlans(
                 repository = repository,
-                // Navigate to TrainingPlanManagementScreen
                 onPlanSelected = { planId ->
-                    // Navigate to TrainingPlanManagementScreen
                     navController.navigate("training_plan_management/$planId")
                 },
                 onNavigateBack = {
-                    // Handle back navigation
                     (context as? Activity)?.finish() // or use proper navigation
-                }
+                },
             )
         }
 
@@ -37,9 +34,7 @@ fun HomeScreen(repository: GymRepository, navController: NavController) {
             AddTrainingPlanScreen(
                 repository = repository,
                 onPlanAdded = { planId ->
-                    // Handle successful creation
                     println("Created plan with ID: $planId")
-                    // Navigate to plan details or back to list
                 },
                 onNavigateBack = {}
             )

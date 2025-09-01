@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.gymlogger.ui.Animations
 import com.example.gymlogger.repository.GymRepository
 import database.TrainingPlan
@@ -67,7 +68,8 @@ fun ManageTrainingPlan(
     planId: Long,
     repository: GymRepository,
     onStartWorkout: (Long) -> Unit = {},
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    navController: NavController
 ) {
     val animations = Animations()
     var isExpanded by remember { mutableStateOf(false) }
@@ -288,7 +290,8 @@ fun ManageTrainingPlan(
                         when (selectedAction) {
                             ManagementAction.VIEW_WORKOUTS -> ViewWorkoutsForm(
                                 workoutSessions = workoutSessions,
-                                onNavigateBack = { selectedAction = null }
+                                onNavigateBack = { selectedAction = null },
+                                navController = navController
                             )
 
                             ManagementAction.EDIT_PLAN -> EditPlanForm(
@@ -381,7 +384,8 @@ private fun ManagementActionCard(
 @Composable
 private fun ViewWorkoutsForm(
     workoutSessions: List<WorkoutSession>,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -429,11 +433,11 @@ private fun ViewWorkoutsForm(
                 }
             }
         } else {
-            LazyColumn(
+            Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(workoutSessions.sortedByDescending { it.date }) { session ->
-                    WorkoutSessionCard(session = session)
+                workoutSessions.sortedByDescending { it.date }.forEach { session ->
+                    WorkoutSessionCard(session = session, navController = navController)
                 }
             }
         }
@@ -441,12 +445,13 @@ private fun ViewWorkoutsForm(
 }
 
 @Composable
-private fun WorkoutSessionCard(session: WorkoutSession) {
+private fun WorkoutSessionCard(session: WorkoutSession, navController: NavController) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
+        ),
+        onClick = {navController.navigate("start_workout/${session.id}")}
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

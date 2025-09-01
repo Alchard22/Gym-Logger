@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.gymlogger.ui.Animations
 import com.example.gymlogger.repository.GymRepository
 import database.TrainingPlan
@@ -38,7 +39,7 @@ import kotlinx.datetime.toLocalDateTime
 fun ViewTrainingPlans(
     repository: GymRepository,
     onPlanSelected: (Long) -> Unit = {},
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
 ) {
     val animations = Animations()
     var isExpanded by remember { mutableStateOf(false) }
@@ -183,7 +184,7 @@ fun ViewTrainingPlans(
                             TrainingPlanCard(
                                 plan = plan,
                                 isRecent = false,
-                                onClick = { onPlanSelected(plan.id) }
+                                onClick = { onPlanSelected(plan.id) } // nav here
                             )
                         }
                     }
