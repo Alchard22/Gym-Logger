@@ -2327,6 +2327,9 @@ SELECT * FROM Exercise ORDER BY name;
 selectExerciseById:
 SELECT * FROM Exercise WHERE id = ?;
 
+selectExerciseByIds:
+SELECT * FROM Exercise WHERE id IN ?;
+
 insertExercise:
 INSERT INTO Exercise(name, description, video_link) VALUES(?, ?, ?);
 
@@ -2348,6 +2351,23 @@ FROM Exercise e
 JOIN ExerciseMuscleGroup emg ON e.id = emg.exercise_id
 JOIN MuscleGroup mg ON emg.muscle_group_id = mg.id
 WHERE e.id = ?;
+
+getExercisesWithMuscleGroupsByIds:
+SELECT
+    e.id,
+    e.name,
+    e.aliases,
+    e.description,
+    e.video_link,
+    e.favourite,
+    mg.id AS muscle_group_id,
+    mg.name AS muscle_group_name,
+    mg.category AS muscle_group_category,
+    emg.involvement_type
+FROM Exercise e
+LEFT JOIN ExerciseMuscleGroup emg ON e.id = emg.exercise_id
+LEFT JOIN MuscleGroup mg ON emg.muscle_group_id = mg.id
+WHERE e.id IN ?;
 
 selectAllExerciseWithMuscleGroups:
 SELECT

@@ -67,13 +67,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gymlogger.database.ConvertToExerciseGroupedWithMuscleGroups
 import com.example.gymlogger.database.ExerciseGroupedWithMuscleGroups
 import com.example.gymlogger.repository.GymRepository
 import com.example.gymlogger.repository.WorkoutSetRepoData
 import com.example.gymlogger.ui.Animations
 import database.MuscleGroup
 import database.WorkoutSession
+import database.WorkoutSet
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
@@ -157,6 +163,45 @@ fun StartWorkout(
                     saveWorkoutSets()
                 }
             }
+        }
+    }
+
+    LaunchedEffect(workoutSessionId) {
+        workoutSession = repository.getWorkoutSession(workoutSessionId)
+
+        val existingSets = repository.getWorkoutSetsForSessionOnce(workoutSessionId)
+        if (existingSets.isNotEmpty()) {
+            val exerciseIds = existingSets.map { it.exercise_id }.distinct()
+            val exercises = repository.getExerciseByIds(exerciseIds)
+
+            val exercisesWithMuscleGroups = repository.getExercisesWithMuscleGroups(exerciseIds)
+
+            val loadedExercises = exerciseIds.mapNotNull { exerciseId ->
+                val exerciseWithMuscleGroups = exercisesWithMuscleGroups.find { it.id == exerciseId }
+                val exerciseSets = existingSets.filter { it.exercise_id == exerciseId }
+                    .sortedBy { it.set_number }
+
+                if (exerciseWithMuscleGroups != null) {
+                    val workoutSets = exerciseSets.map { dbSet ->
+                        WorkoutSetData(
+                            setNumber = dbSet.set_number.toInt(),
+                            reps = dbSet.reps.toString(),
+                            weight = dbSet.weight.toString(),
+                            intensity = dbSet.intensity?.toString() ?: "",
+                            restSeconds = dbSet.rest_seconds?.toString() ?: "60",
+                            notes = ""
+                        )
+                    }.toMutableList()
+
+                    SelectedExercise(
+                        exercise = ConvertToExerciseGroupedWithMuscleGroups(exerciseWithMuscleGroups),
+                        sets = workoutSets
+                    )
+                } else null
+            }
+
+            selectedExercises = loadedExercises
+            lastSavedExercises = loadedExercises.map { it.copy() }
         }
     }
 
@@ -270,7 +315,10 @@ fun StartWorkout(
                                 )
                             }
                             Text(
-                                text = "In Progress • ${selectedExercises.size} exercises",
+                                text = if (selectedExercises.isNotEmpty()) // TODO && first load
+                                    "Resuming • ${selectedExercises.size} exercises"
+                                else
+                                    "In Progress • ${selectedExercises.size} exercises",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                             )

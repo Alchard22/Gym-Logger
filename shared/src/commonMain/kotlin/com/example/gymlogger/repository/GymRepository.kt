@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
+import kotlin.collections.emptyList
 
 class GymRepository(private val database: GymDatabase) {
 
@@ -227,6 +228,14 @@ class GymRepository(private val database: GymDatabase) {
         }
     }
 
+    fun getExerciseByIds(id: List<Long>): List<Exercise> {
+        return if (id.isEmpty()) {
+            emptyList()
+        } else {
+            database.gymDatabaseQueries.selectExerciseByIds(id).executeAsList()
+        }
+    }
+
     suspend fun getExerciseWithMuscleGroups(id: Long): List<ExerciseWithMuscleGroup> {
         return withContext(Dispatchers.Default) {
             database.gymDatabaseQueries
@@ -246,6 +255,30 @@ class GymRepository(private val database: GymDatabase) {
                         involvementType = row.involvement_type
                     )
                 }
+        }
+    }
+
+    fun getExercisesWithMuscleGroups(exerciseIds: List<Long>): List<ExerciseGroupedWithMuscleGroupsDB> {
+        if (exerciseIds.isEmpty()) return emptyList()
+
+        val rows = database.gymDatabaseQueries.getExercisesWithMuscleGroupsByIds(exerciseIds)
+            .executeAsList()
+
+        return rows.groupBy { it.id }.map { (exerciseId, exerciseRows) ->
+            val firstRow = exerciseRows.first()
+
+            ExerciseGroupedWithMuscleGroupsDB(
+                id = firstRow.id,
+                name = firstRow.name,
+                aliases = firstRow.aliases,
+                description = firstRow.description,
+                video_link = firstRow.video_link,
+                favourite = (firstRow.favourite ?: 0).toInt(),
+                muscle_group_id = exerciseRows.mapNotNull { it.muscle_group_id },
+                muscle_group_name = exerciseRows.mapNotNull { it.muscle_group_name },
+                muscle_group_category = exerciseRows.mapNotNull { it.muscle_group_category },
+                involvement_type = firstRow.involvement_type!!
+            )
         }
     }
 
@@ -273,6 +306,10 @@ class GymRepository(private val database: GymDatabase) {
         return database.gymDatabaseQueries.selectWorkoutSetsForSession(sessionId)
             .asFlow()
             .mapToList(Dispatchers.Default)
+    }
+
+    fun getWorkoutSetsForSessionOnce(sessionId: Long): List<WorkoutSet> {
+        return database.gymDatabaseQueries.selectWorkoutSetsForSession(sessionId).executeAsList()
     }
 
     suspend fun getWorkoutSet(id: Long): WorkoutSet? {
@@ -391,4 +428,17 @@ data class WorkoutSetRepoData(
     val weight: Double,
     val intensity: Long?,
     val restSeconds: Long?
+)
+
+public data class ExerciseGroupedWithMuscleGroupsDB(
+    public val id: Long,
+    public val name: String,
+    public val aliases: String?,
+    public val description: String?,
+    public val video_link: String?,
+    public val favourite: Int,
+    public val muscle_group_id: List<Long>,
+    public val muscle_group_name: List<String>,
+    public val muscle_group_category: List<String?>,
+    public val involvement_type: String,
 )
