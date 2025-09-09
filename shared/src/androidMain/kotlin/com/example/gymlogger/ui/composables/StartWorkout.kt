@@ -331,6 +331,9 @@ fun StartWorkout(
                                 "Back",
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
+                            scope.launch {
+                                saveWorkoutSets()
+                            }
                         }
                     }
                 }
