@@ -15,6 +15,7 @@ import com.example.gymlogger.database.DatabaseModule
 import com.example.gymlogger.repository.GymRepository
 import com.example.gymlogger.ui.composables.MainNavigation
 import com.example.gymlogger.ui.composables.ViewTrainingPlans
+import com.example.gymlogger.utilities.dismissKeyboardOnTap
 
 class MainActivity : ComponentActivity() {
     private var repository: GymRepository? = null;
@@ -27,7 +28,9 @@ class MainActivity : ComponentActivity() {
                 setContent {
                     MyApplicationTheme {
                         Surface(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .dismissKeyboardOnTap(),
                             color = MaterialTheme.colorScheme.background
                         ) {
                             MainNavigation(repository!!)
