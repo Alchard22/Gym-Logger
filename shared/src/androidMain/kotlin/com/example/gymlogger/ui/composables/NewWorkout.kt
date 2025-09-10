@@ -44,6 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gymlogger.ui.Animations
 import com.example.gymlogger.repository.GymRepository
 import database.MuscleGroup
@@ -54,7 +56,12 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+class NewWorkoutViewModel(val planId: Long) : ViewModel() {
+    var storedWorkoutId by mutableStateOf<Long?>(null)
+    var selectedMuscleGroups by mutableStateOf(setOf<Long>())
+}
+
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun NewWorkout(
     planId: Long,
@@ -63,8 +70,9 @@ fun NewWorkout(
     onNavigateBack: () -> Unit = {}
 ) {
     val animations = Animations()
+    val viewModel: NewWorkoutViewModel = viewModel { NewWorkoutViewModel(planId) }
+
     var workoutName by remember { mutableStateOf("") }
-    var selectedMuscleGroups by remember { mutableStateOf(setOf<Long>()) }
     var trainingPlan by remember { mutableStateOf<TrainingPlan?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -189,7 +197,7 @@ fun NewWorkout(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
 
-                            Text( // TODO review text below the Workout! part goes to new line
+                            Text(
                                 text = "Select the muscle groups you plan to work. This helps suggest exercises later, or just go ahead and start the workout!",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -203,12 +211,12 @@ fun NewWorkout(
                             CompactMuscleGroupSection(
                                 title = "Workout Type",
                                 muscleGroups = primaryGroups,
-                                selectedGroups = selectedMuscleGroups,
+                                selectedGroups = viewModel.selectedMuscleGroups,
                                 onSelectionChange = { groupId, isSelected ->
-                                    selectedMuscleGroups = if (isSelected) {
-                                        selectedMuscleGroups + groupId
+                                    viewModel.selectedMuscleGroups = if (isSelected) {
+                                        viewModel.selectedMuscleGroups + groupId
                                     } else {
-                                        selectedMuscleGroups - groupId
+                                        viewModel.selectedMuscleGroups - groupId
                                     }
                                 },
                                 isHighlighted = true
@@ -262,12 +270,12 @@ fun NewWorkout(
                                         CompactMuscleGroupSection(
                                             title = "Body Regions",
                                             muscleGroups = secondaryGroups,
-                                            selectedGroups = selectedMuscleGroups,
+                                            selectedGroups = viewModel.selectedMuscleGroups,
                                             onSelectionChange = { groupId, isSelected ->
-                                                selectedMuscleGroups = if (isSelected) {
-                                                    selectedMuscleGroups + groupId
+                                                viewModel.selectedMuscleGroups = if (isSelected) {
+                                                    viewModel.selectedMuscleGroups + groupId
                                                 } else {
-                                                    selectedMuscleGroups - groupId
+                                                    viewModel.selectedMuscleGroups - groupId
                                                 }
                                             }
                                         )
@@ -278,12 +286,12 @@ fun NewWorkout(
                                         CompactMuscleGroupSection(
                                             title = "Specific Muscles",
                                             muscleGroups = specificGroups,
-                                            selectedGroups = selectedMuscleGroups,
+                                            selectedGroups = viewModel.selectedMuscleGroups,
                                             onSelectionChange = { groupId, isSelected ->
-                                                selectedMuscleGroups = if (isSelected) {
-                                                    selectedMuscleGroups + groupId
+                                                viewModel.selectedMuscleGroups = if (isSelected) {
+                                                    viewModel.selectedMuscleGroups + groupId
                                                 } else {
-                                                    selectedMuscleGroups - groupId
+                                                    viewModel.selectedMuscleGroups - groupId
                                                 }
                                             }
                                         )
@@ -294,18 +302,17 @@ fun NewWorkout(
                     }
 
                     // Clear Selection Button
-                    if (selectedMuscleGroups.isNotEmpty()) {
+                    if (viewModel.selectedMuscleGroups.isNotEmpty()) {
                         item {
                             TextButton(
-                                onClick = { selectedMuscleGroups = emptySet() },
+                                onClick = { viewModel.selectedMuscleGroups = emptySet() },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("Clear Selection (${selectedMuscleGroups.size} selected)")
+                                Text("Clear Selection (${viewModel.selectedMuscleGroups.size} selected)")
                             }
                         }
                     }
 
-                    // Add some bottom padding for the floating button
                     item {
                         Spacer(modifier = Modifier.height(80.dp))
                     }
@@ -338,35 +345,38 @@ fun NewWorkout(
                     errorMessage = "Workout name is required"
                     return@Button
                 }
-
-                scope.launch {
-                    isLoading = true
-                    try {
-                        val workoutSessionId = repository.insertWorkoutSession(
-                            trainingPlanId = planId,
-                            name = workoutName.trim(),
-                            date = now.toEpochMilliseconds(),
-                            notes = if (selectedMuscleGroups.isNotEmpty()) {
-                                "Targeting: " + muscleGroups
-                                    .filter { it.id in selectedMuscleGroups }
-                                    .joinToString(", ") { it.name }
-                            } else null
-                        )
-
-                        // Link selected muscle groups to the workout session
-                        selectedMuscleGroups.forEach { muscleGroupId ->
-                            repository.linkWorkoutSessionToMuscleGroup(
-                                workoutSessionId,
-                                muscleGroupId
+                if (viewModel.storedWorkoutId == null) {
+                    scope.launch {
+                        isLoading = true
+                        try {
+                            viewModel.storedWorkoutId = repository.insertWorkoutSession(
+                                trainingPlanId = planId,
+                                name = workoutName.trim(),
+                                date = now.toEpochMilliseconds(),
+                                notes = if (viewModel.selectedMuscleGroups.isNotEmpty()) {
+                                    "Targeting: " + muscleGroups
+                                        .filter { it.id in viewModel.selectedMuscleGroups }
+                                        .joinToString(", ") { it.name }
+                                } else null
                             )
-                        }
 
-                        onWorkoutCreated(workoutSessionId)
-                    } catch (e: Exception) {
-                        errorMessage = "Failed to create workout: ${e.message}"
-                    } finally {
-                        isLoading = false
+                            // Link selected muscle groups to the workout session
+                            viewModel.selectedMuscleGroups.forEach { muscleGroupId ->
+                                repository.linkWorkoutSessionToMuscleGroup(
+                                    viewModel.storedWorkoutId!!,
+                                    muscleGroupId
+                                )
+                            }
+                            onWorkoutCreated(viewModel.storedWorkoutId!!)
+                        } catch (e: Exception) {
+                            errorMessage = "Failed to create workout: ${e.message}"
+                        } finally {
+                            isLoading = false
+                        }
                     }
+                } else {
+                    onWorkoutCreated(viewModel.storedWorkoutId!!)
+
                 }
             },
             modifier = Modifier
@@ -396,7 +406,7 @@ fun NewWorkout(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Start Workout",
+                    text = if (viewModel.storedWorkoutId == null) "Start Workout" else "Resume Workout",
                     style = MaterialTheme.typography.titleMedium
                 )
             }
