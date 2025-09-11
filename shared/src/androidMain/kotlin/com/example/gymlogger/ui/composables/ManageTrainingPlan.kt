@@ -233,7 +233,7 @@ fun ManageTrainingPlan(
                             ManagementActionCard(
                                 title = "View Workout History",
                                 description = "See all ${workoutSessions.size} previous workouts",
-                                onClick = { selectedAction = ManagementAction.VIEW_WORKOUTS }
+                                onClick = { selectedAction = if (selectedAction != ManagementAction.VIEW_WORKOUTS) ManagementAction.VIEW_WORKOUTS else null}
                             )
                         }
 
