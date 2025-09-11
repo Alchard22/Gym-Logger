@@ -122,6 +122,7 @@ fun StartWorkout(
     var showAddExerciseDialog by remember { mutableStateOf(false) }
     var showAllExercises by remember { mutableStateOf(false) }
     var isPreviousWorkoutsExpanded by remember { mutableStateOf(false) }
+    var FirstLoad by remember { mutableStateOf(true) }
 
     val workoutSessions by repository.getWorkoutSessionMuscleGroup(workoutSessionId).collectAsState(initial = emptyList())
     val getAllExercisesWithMusclesGroups by repository.getAllExercisesWithMuscleGroups().collectAsState(initial = emptyList())
@@ -172,7 +173,7 @@ fun StartWorkout(
         val existingSets = repository.getWorkoutSetsForSessionOnce(workoutSessionId)
         if (existingSets.isNotEmpty()) {
             val exerciseIds = existingSets.map { it.exercise_id }.distinct()
-            val exercises = repository.getExerciseByIds(exerciseIds)
+//            val exercises = repository.getExerciseByIds(exerciseIds)
 
             val exercisesWithMuscleGroups = repository.getExercisesWithMuscleGroups(exerciseIds)
 
@@ -199,7 +200,7 @@ fun StartWorkout(
                     )
                 } else null
             }
-
+            FirstLoad = false
             selectedExercises = loadedExercises
             lastSavedExercises = loadedExercises.map { it.copy() }
         }
@@ -315,7 +316,7 @@ fun StartWorkout(
                                 )
                             }
                             Text(
-                                text = if (selectedExercises.isNotEmpty()) // TODO && first load
+                                text = if (!FirstLoad) // TODO && first load
                                     "Resuming • ${selectedExercises.size} exercises"
                                 else
                                     "In Progress • ${selectedExercises.size} exercises",
@@ -338,27 +339,33 @@ fun StartWorkout(
                 Spacer(modifier = Modifier.padding(2.dp))
 
                 if (selectedExercises.isNotEmpty()) {
-                    Button(
-                        modifier = Modifier.fillMaxWidth().height(30.dp).padding(0.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        onClick = {
-                            scope.launch {
-                                saveWorkoutSets()
-                                onWorkoutCompleted()
-                            }
-                        },
-                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
+                    AnimatedVisibility(
+                        visible = selectedExercises.isNotEmpty(),
+                        enter = animations.slideInVertically,
+                        exit = animations.slideOutVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Save and Exit Workout", modifier = Modifier.offset(y = (-2).dp))
+                        Button(
+                            modifier = Modifier.fillMaxWidth().height(30.dp).padding(0.dp),
+                            shape = MaterialTheme.shapes.medium,
+                            onClick = {
+                                scope.launch {
+                                    saveWorkoutSets()
+                                    onWorkoutCompleted()
+                                }
+                            },
+                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Save and Exit Workout", modifier = Modifier.offset(y = (-2).dp))
+                        }
                     }
                 }
             }
