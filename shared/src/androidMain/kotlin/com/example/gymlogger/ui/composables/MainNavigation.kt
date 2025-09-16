@@ -90,17 +90,31 @@ fun MainNavigation(
         }
 
         composable(
-            route = "start_workout/{planId}",
-            arguments = listOf(navArgument("planId") { type = NavType.LongType })
+            route = "start_workout/{workoutSessionId}",
+            arguments = listOf(navArgument("workoutSessionId") { type = NavType.LongType })
         ) { backStackEntry ->
-            val planId = backStackEntry.arguments?.getLong("planId") ?: return@composable
+            val workoutSessionId = backStackEntry.arguments?.getLong("workoutSessionId") ?: return@composable
 
             StartWorkout(
-                workoutSessionId = planId,
+                workoutSessionId = workoutSessionId,
                 repository = gymRepository,
                 onWorkoutCompleted = {
-                    navController.navigate("workout_completed/$planId") //TODO Analytics
+                    navController.navigate("post_workout/$workoutSessionId") //TODO Analytics
                 },
+                onNavigateBack = {
+                    navController.popBackStack()
+                })
+        }
+
+        composable(
+            route = "post_workout/{workoutSessionId}",
+            arguments = listOf(navArgument("workoutSessionId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val workoutSessionId = backStackEntry.arguments?.getLong("workoutSessionId") ?: return@composable
+
+            PostWorkout(
+                workoutSessionId = workoutSessionId,
+                repository = gymRepository,
                 onNavigateBack = {
                     navController.popBackStack()
                 })

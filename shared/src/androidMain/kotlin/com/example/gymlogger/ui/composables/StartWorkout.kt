@@ -316,7 +316,7 @@ fun StartWorkout(
                                 )
                             }
                             Text(
-                                text = if (!FirstLoad) // TODO && first load
+                                text = if (!FirstLoad)
                                     "Resuming • ${selectedExercises.size} exercises"
                                 else
                                     "In Progress • ${selectedExercises.size} exercises",
