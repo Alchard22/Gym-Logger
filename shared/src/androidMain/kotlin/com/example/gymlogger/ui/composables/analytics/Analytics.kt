@@ -1,5 +1,7 @@
-package com.example.gymlogger.ui.composables
+package com.example.gymlogger.ui.composables.analytics
 
+import android.graphics.Paint
+import android.os.Debug
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -69,21 +71,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import database.WorkoutSet
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.*
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.sp
-import kotlin.math.*
+import com.example.gymlogger.AppSettings
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 enum class GraphType(val displayName: String) {
     LINE("Line Chart"),
@@ -249,11 +247,20 @@ fun Analytics(
                 val lineGraphSeries = remember(exerciseProgressList, colorScheme) {
                     createExerciseProgressLineGraph(exerciseProgressList, colorScheme)
                 }
-
                 ModernLineGraph(
                     series = lineGraphSeries,
                     modifier = Modifier.fillMaxSize()
                 )
+//                val barChartSeries = remember(exerciseProgressList, colorScheme) {
+//                    createExerciseVolumePerMonthBarChart(exerciseProgressList, colorScheme, maxExercisesToShow = 3)
+//                }
+//
+//                Log.i("Test", barChartSeries.toString())
+//                ModernBarChart(
+//                    series = barChartSeries,
+//                    modifier = Modifier.fillMaxSize(),
+//                    showLegend = true // Multi-series needs legend
+//                )
             }
         }
         item {
@@ -1071,6 +1078,7 @@ fun ModernLineGraph(
     val allPoints = series.flatMap { it.points }
     val minX = allPoints.minOfOrNull { it.x } ?: 0f
     val maxX = allPoints.maxOfOrNull { it.x } ?: 1f
+    Log.i("Dates", "${minX.toString()}, ${maxX.toString()}")
     val minY = allPoints.minOfOrNull { it.y } ?: 0f
     val maxY = allPoints.maxOfOrNull { it.y } ?: 1f
 
@@ -1143,7 +1151,8 @@ fun ModernLineGraph(
                     width = graphWidth,
                     offsetX = offSetPadding,
                     offsetY = offSetPadding,
-                    textColor = colorScheme.onSurface.copy(alpha = 0.7f)
+                    textColor = colorScheme.onSurface.copy(alpha = 0.7f),
+                    labelCount = 3
                 )
             }
 
@@ -1275,7 +1284,7 @@ private fun DrawScope.drawGrid(
     }
 }
 
-private fun DrawScope.drawAxes(
+fun DrawScope.drawAxes(
     width: Float,
     height: Float,
     offsetX: Float,
@@ -1299,16 +1308,17 @@ private fun DrawScope.drawAxes(
     )
 }
 
-private fun DrawScope.drawYAxisLabels(
+fun DrawScope.drawYAxisLabels( // TODO, why can't this be used in bar chart?
     minY: Float,
     maxY: Float,
     height: Float,
     offsetX: Float,
     offsetY: Float,
-    textColor: Color
+    textColor: Color,
+    valueType: String = "kg"
 ) {
     val labelCount = 6
-    val textPaint = android.graphics.Paint().apply {
+    val textPaint = Paint().apply {
         this.color = textColor.toArgb()
         textSize = 12.sp.toPx()
         isAntiAlias = true
@@ -1327,7 +1337,7 @@ private fun DrawScope.drawYAxisLabels(
         }
 
         drawContext.canvas.nativeCanvas.drawText(
-            label + "kg", // TODO Add weight type
+            label + valueType, // TODO Add weight type
             offsetX - 25.dp.toPx(),
             y + 4.dp.toPx(),
             textPaint
@@ -1335,30 +1345,31 @@ private fun DrawScope.drawYAxisLabels(
     }
 }
 
-private fun DrawScope.drawXAxisLabels(
+public fun DrawScope.drawXAxisLabels(
     minX: Float,
     maxX: Float,
     width: Float,
     offsetX: Float,
     offsetY: Float,
-    textColor: Color
+    textColor: Color,
+    labelCount: Int = 5,
 ) {
-    val textPaint = android.graphics.Paint().apply {
+    val textPaint = Paint().apply {
         this.color = textColor.toArgb()
         textSize = 11.sp.toPx()
         isAntiAlias = true
-        textAlign = android.graphics.Paint.Align.CENTER
+        textAlign = Paint.Align.CENTER
     }
 
     // Create evenly spaced date labels across the time range
-    val labelCount = 5 // Show 5 date labels across the graph
+    val labelCount = labelCount // Show 5 date labels across the graph
 
     for (i in 0..labelCount) {
-        val timestamp = minX + (maxX - minX) * i / labelCount
+        val timestamp = minX + (maxX - minX) * i / labelCount // dates
         val x = offsetX + (width * i / labelCount)
-
-        val dateLabel = java.text.SimpleDateFormat("MMM dd", java.util.Locale.getDefault())
-            .format(java.util.Date(timestamp.toLong()))
+        Log.i("dates", "${minX.toString()} ${maxX.toString()} ${timestamp.toString()}")
+        val dateLabel = SimpleDateFormat(AppSettings.getDateFormat, Locale.getDefault())
+            .format(Date(timestamp.toLong()))
 
         drawContext.canvas.nativeCanvas.drawText(
             dateLabel,
@@ -1462,9 +1473,9 @@ fun createExerciseProgressLineGraph(
     return exerciseProgressList.mapIndexed { index, progress ->
         val points = progress.sessions.sortedBy { it.date }.mapIndexed { pointIndex, session ->
             LineGraphPoint(
-                x = session.date.toFloat(), // Use actual timestamp for proper spacing
+                x = session.date.toFloat(), // Use actual timestamp for proper spacing // TODO here!!!!!
                 y = session.maxWeight.toFloat(),
-                label = java.text.SimpleDateFormat("MMM dd", java.util.Locale.getDefault()).format(java.util.Date(session.date)),
+                label = SimpleDateFormat(AppSettings.getDateFormat, Locale.getDefault()).format(Date(session.date)),
                 value = "${session.maxWeight}kg"
             )
         }

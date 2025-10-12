@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.gymlogger.ui.composables.analytics.Analytics
 
 @Composable
 fun MainNavigation(
@@ -118,6 +119,17 @@ fun MainNavigation(
                 onNavigateBack = {
                     navController.popBackStack()
                 })
+        }
+
+        composable(
+            route = "analytics/{workoutSessionId}",
+            arguments = listOf(navArgument("workoutSessionId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val workoutSessionId: Long = backStackEntry.arguments?.getLong("workoutSessionId") ?: return@composable
+
+            Analytics(
+                workoutSessionId = if(workoutSessionId.toInt() == 0 ) null else workoutSessionId, // Can be pathed to post work out with Id, or without.
+                repository = gymRepository,) // Room for selected exercises in the future.
         }
     }
 }
